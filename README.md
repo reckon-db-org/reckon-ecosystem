@@ -1,7 +1,11 @@
 # Reckon Ecosystem
 
 <div align="center">
-  <img src="assets/logo.svg" width="120" height="120" alt="Reckon">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/reckondb-logo-light.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/reckondb-logo.svg">
+    <img src="assets/reckondb-logo.svg" width="400" alt="ReckonDB">
+  </picture>
 
   <h3>BEAM-native Event Sourcing &amp; CQRS Infrastructure</h3>
 

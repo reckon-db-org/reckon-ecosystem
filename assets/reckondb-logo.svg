@@ -1,0 +1,91 @@
+<svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Sphere gradient for 3D effect -->
+    <radialGradient id="sphereGradient" cx="0.3" cy="0.3" r="0.7">
+      <stop offset="0%" stop-color="#4C1D95" />
+      <stop offset="40%" stop-color="#3F125B" />
+      <stop offset="80%" stop-color="#320B4F" />
+      <stop offset="100%" stop-color="#1E0A2E" />
+    </radialGradient>
+    
+    <!-- Enhanced sphere highlight -->
+    <radialGradient id="sphereHighlight" cx="0.25" cy="0.25" r="0.3">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.7" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    
+    <!-- R letter shadow for embossed effect -->
+    <filter id="embossedR">
+      <feDropShadow dx="1" dy="1" stdDeviation="0.5" flood-color="#000000" flood-opacity="0.4"/>
+      <feDropShadow dx="-0.5" dy="-0.5" stdDeviation="0.3" flood-color="#FFFFFF" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- 3D Sphere background for the "R" -->
+  <circle cx="30" cy="30" r="25" fill="url(#sphereGradient)" stroke="#4A4A4A" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Sphere highlight for 3D effect -->
+  <ellipse cx="22" cy="22" rx="10" ry="8" fill="url(#sphereHighlight)" />
+  
+  <!-- Additional small highlight for extra shine -->
+  <ellipse cx="20" cy="20" rx="4" ry="3" fill="#FFFFFF" opacity="0.6" />
+  
+  <!-- Eye of Horus symbol, enlarged and color adjusted for sphere surface -->
+  <g stroke="#B8E234" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"
+     style="opacity: 0.95;" transform="scale(1.2) translate(-2, -3)">
+    <!-- Main eye shape (morphed to sphere curvature) -->
+    <path d="M24 24 Q28 19 33 24 Q38 19 42 24 Q38 29 33 24 Q28 29 24 24 Z"/>
+    <!-- Eyebrow line (curved to follow sphere) -->
+    <path d="M25 19 Q33 16 41 19"/>
+    <!-- Pupil (shifted with perspective) -->
+    <circle cx="33" cy="24" r="2.2" fill="#B8E234"/>
+    <!-- Teardrop marking below (morphed) -->
+    <path d="M30 29 Q28 31 28 34 Q28 36 30 36 Q32 34 30 29"/>
+    <!-- Spiral curl extending from corner (curved) -->
+    <path d="M42 24 Q44 26 42 28 Q40 30 38 28 Q40 26 42 24"/>
+    <!-- Decorative lines (following sphere curve) -->
+    <path d="M38 28 Q38 32 39 36"/>
+    <path d="M34 31 Q34 35 35 39"/>
+    <!-- Additional traditional markings (curved) -->
+    <path d="M26 27 Q24 29 23 32"/>
+  </g>
+  
+  <!-- Enhanced surface texture overlay for the eye -->
+  <ellipse cx="28" cy="21" rx="10" ry="8" fill="none" stroke="#B8E234" stroke-width="0.6" opacity="0.35"
+           stroke-dasharray="1,4" transform="rotate(-10 28 21) scale(1.2)"/>
+  
+  <!-- Surface depth shading -->
+  <ellipse cx="28" cy="21" rx="7" ry="5" fill="#9BCF20" opacity="0.25" transform="scale(1.2)"/>
+  
+  <!-- Database cylinders representing event sourcing -->
+  <g transform="translate(160, 15)">
+    <!-- Cylinder 1 -->
+    <ellipse cx="0" cy="0" rx="12" ry="4" fill="#3F125B" opacity="0.8"/>
+    <rect x="-12" y="0" width="24" height="20" fill="#3F125B" opacity="0.8"/>
+    <ellipse cx="0" cy="20" rx="12" ry="4" fill="#3F125B"/>
+    
+    <!-- Cylinder 2 (offset) -->
+    <ellipse cx="8" cy="8" rx="10" ry="3" fill="#84CC16" opacity="0.8"/>
+    <rect x="-2" y="8" width="20" height="15" fill="#84CC16" opacity="0.8"/>
+    <ellipse cx="8" cy="23" rx="10" ry="3" fill="#84CC16"/>
+  </g>
+  
+  <!-- Event flow arrows -->
+  <g stroke="#6B7280" stroke-width="1" fill="none" opacity="0.7">
+    <path d="M55 20 Q85 15 140 20" stroke-dasharray="3,3"/>
+    <path d="M55 25 Q85 20 140 25" stroke-dasharray="3,3"/>
+    <path d="M55 30 Q85 35 140 30" stroke-dasharray="3,3"/>
+    <path d="M55 35 Q85 40 140 35" stroke-dasharray="3,3"/>
+    <polygon points="140,18 145,20 140,22" fill="#6B7280"/>
+    <polygon points="140,23 145,25 140,27" fill="#6B7280"/>
+    <polygon points="140,28 145,30 140,32" fill="#6B7280"/>
+    <polygon points="140,33 145,35 140,37" fill="#6B7280"/>
+  </g>
+  
+  <!-- ReckonDB text -->
+  <text x="58" y="33" font-family="Inter, sans-serif" font-size="16" font-weight="bold" fill="#000">ReckonDB</text>
+  
+  <!-- Tagline -->
+  <text x="58" y="45" font-family="Source Sans Pro, sans-serif" font-size="7" fill="#6B7280">Event Sourcing Database</text>
+</svg>
