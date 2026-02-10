@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" fill="none">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <filter id="shadow3" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <marker id="dep" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="depOpt" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#f59e0b" opacity="0.6"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="600" fill="url(#bgGrad3)"/>
+  <g opacity="0.06">
+    <pattern id="grid3" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff" stroke-width="0.5"/>
+    </pattern>
+    <rect width="900" height="600" fill="url(#grid3)"/>
+  </g>
+
+  <!-- Title -->
+  <text x="450" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="bold" fill="#fff">
+    Dependency Graph
+  </text>
+  <text x="450" y="62" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#94a3b8">
+    Build order flows top to bottom. Arrows point from dependent to dependency.
+  </text>
+
+  <!-- Level 0: No deps -->
+  <text x="80" y="110" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Level 0</text>
+  <text x="80" y="125" font-family="system-ui, sans-serif" font-size="9" fill="#475569">No dependencies</text>
+
+  <!-- reckon_nifs -->
+  <g filter="url(#shadow3)">
+    <rect x="180" y="95" width="220" height="50" rx="10" fill="#92400e"/>
+    <text x="290" y="118" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_nifs</text>
+    <text x="290" y="135" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fde68a">Rust NIFs · v1.0.1</text>
+  </g>
+
+  <!-- evoq (also no reckon deps) -->
+  <g filter="url(#shadow3)">
+    <rect x="500" y="95" width="220" height="50" rx="10" fill="#065f46"/>
+    <text x="610" y="118" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">evoq</text>
+    <text x="610" y="135" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#a7f3d0">CQRS Framework · v1.2.1</text>
+  </g>
+
+  <!-- Level 1: minimal deps -->
+  <text x="80" y="210" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Level 1</text>
+  <text x="80" y="225" font-family="system-ui, sans-serif" font-size="9" fill="#475569">Shared types</text>
+
+  <!-- reckon_gater -->
+  <g filter="url(#shadow3)">
+    <rect x="340" y="195" width="220" height="50" rx="10" fill="#0c4a6e"/>
+    <text x="450" y="218" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_gater</text>
+    <text x="450" y="235" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bae6fd">Gateway &amp; Types · v1.1.1</text>
+  </g>
+
+  <!-- Level 2: depends on gater -->
+  <text x="80" y="320" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Level 2</text>
+  <text x="80" y="335" font-family="system-ui, sans-serif" font-size="9" fill="#475569">Core packages</text>
+
+  <!-- reckon_db -->
+  <g filter="url(#shadow3)">
+    <rect x="180" y="305" width="220" height="50" rx="10" fill="#4c1d95"/>
+    <text x="290" y="328" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_db</text>
+    <text x="290" y="345" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e9d5ff">Event Store · v1.2.3</text>
+  </g>
+
+  <!-- Level 3: depends on gater + evoq -->
+  <text x="80" y="425" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Level 3</text>
+  <text x="80" y="440" font-family="system-ui, sans-serif" font-size="9" fill="#475569">Integration</text>
+
+  <!-- reckon_evoq -->
+  <g filter="url(#shadow3)">
+    <rect x="340" y="415" width="220" height="50" rx="10" fill="#831843"/>
+    <text x="450" y="438" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_evoq</text>
+    <text x="450" y="455" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fce7f3">Adapter · v1.1.3</text>
+  </g>
+
+  <!-- === DEPENDENCY ARROWS === -->
+
+  <!-- reckon_db -> reckon_gater (db depends on gater) -->
+  <line x1="340" y1="305" x2="420" y2="245" stroke="#94a3b8" stroke-width="2" marker-end="url(#dep)"/>
+  <text x="355" y="278" font-family="system-ui, sans-serif" font-size="9" fill="#64748b">~> 1.1.1</text>
+
+  <!-- reckon_db -> reckon_nifs (optional) -->
+  <line x1="290" y1="305" x2="290" y2="145" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.5" marker-end="url(#depOpt)"/>
+  <text x="220" y="230" font-family="system-ui, sans-serif" font-size="9" fill="#f59e0b" opacity="0.7">optional</text>
+
+  <!-- reckon_evoq -> reckon_gater -->
+  <line x1="450" y1="415" x2="450" y2="245" stroke="#94a3b8" stroke-width="2" marker-end="url(#dep)"/>
+  <text x="458" y="340" font-family="system-ui, sans-serif" font-size="9" fill="#64748b">~> 1.1.1</text>
+
+  <!-- reckon_evoq -> evoq -->
+  <line x1="530" y1="415" x2="590" y2="145" stroke="#94a3b8" stroke-width="2" marker-end="url(#dep)"/>
+  <text x="570" y="285" font-family="system-ui, sans-serif" font-size="9" fill="#64748b">~> 1.2</text>
+
+  <!-- Legend -->
+  <g transform="translate(80, 500)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#94a3b8">Legend</text>
+
+    <line x1="0" y1="20" x2="50" y2="20" stroke="#94a3b8" stroke-width="2"/>
+    <text x="60" y="24" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Required dependency</text>
+
+    <line x1="250" y1="20" x2="300" y2="20" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.7"/>
+    <text x="310" y="24" font-family="system-ui, sans-serif" font-size="11" fill="#fbbf24">Optional dependency</text>
+  </g>
+
+  <!-- Key insight -->
+  <g transform="translate(80, 550)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">
+      Key: reckon_evoq depends on evoq + reckon_gater (NOT reckon_db directly).
+    </text>
+    <text x="0" y="18" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">
+      Applications add reckon_db + evoq + reckon_evoq. The adapter bridges them via reckon_gater's API.
+    </text>
+  </g>
+
+  <text x="850" y="585" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#475569">
+    reckon_ecosystem v0.1.0
+  </text>
+</svg>

@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="cmdGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#5b21b6"/>
+    </linearGradient>
+    <linearGradient id="eventGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ec4899"/>
+      <stop offset="100%" style="stop-color:#be185d"/>
+    </linearGradient>
+    <linearGradient id="storeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+    <linearGradient id="projGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="queryGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <marker id="arrowW" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#e2e8f0"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="700" fill="url(#bgGrad)"/>
+  <g opacity="0.06">
+    <pattern id="grid2" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff" stroke-width="0.5"/>
+    </pattern>
+    <rect width="1200" height="700" fill="url(#grid2)"/>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="45" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="#fff">
+    Event Lifecycle — Command to Query
+  </text>
+  <text x="600" y="70" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" fill="#94a3b8">
+    How data flows through the Reckon stack using CQRS and Event Sourcing
+  </text>
+
+  <!-- === WRITE SIDE === -->
+
+  <!-- Step 1: Command -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="120" width="200" height="130" rx="12" fill="url(#cmdGrad)"/>
+    <text x="160" y="155" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#c4b5fd">1. COMMAND</text>
+    <text x="160" y="182" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">evoq</text>
+    <text x="160" y="204" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e9d5ff">Dispatch command</text>
+    <text x="160" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e9d5ff">to aggregate</text>
+    <text x="160" y="240" text-anchor="middle" font-family="monospace" font-size="9" fill="#a78bfa">execute(State, Cmd)</text>
+  </g>
+
+  <!-- Arrow 1->2 -->
+  <line x1="260" y1="185" x2="320" y2="185" stroke="#e2e8f0" stroke-width="2" opacity="0.6" marker-end="url(#arrowW)"/>
+
+  <!-- Step 2: Event produced -->
+  <g filter="url(#shadow)">
+    <rect x="320" y="120" width="200" height="130" rx="12" fill="url(#eventGrad)"/>
+    <text x="420" y="155" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#fce7f3">2. EVENT</text>
+    <text x="420" y="182" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">evoq</text>
+    <text x="420" y="204" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fce7f3">Aggregate produces</text>
+    <text x="420" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fce7f3">domain events</text>
+    <text x="420" y="240" text-anchor="middle" font-family="monospace" font-size="9" fill="#f9a8d4">apply(State, Event)</text>
+  </g>
+
+  <!-- Arrow 2->3 -->
+  <line x1="520" y1="185" x2="580" y2="185" stroke="#e2e8f0" stroke-width="2" opacity="0.6" marker-end="url(#arrowW)"/>
+
+  <!-- Step 3: Persist -->
+  <g filter="url(#shadow)">
+    <rect x="580" y="120" width="220" height="130" rx="12" fill="url(#storeGrad)"/>
+    <text x="690" y="155" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#bae6fd">3. PERSIST</text>
+    <text x="690" y="182" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_db</text>
+    <text x="690" y="200" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bae6fd">via reckon_evoq adapter</text>
+    <text x="690" y="218" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bae6fd">Append to event stream</text>
+    <text x="690" y="240" text-anchor="middle" font-family="monospace" font-size="9" fill="#7dd3fc">reckon_gater types</text>
+  </g>
+
+  <!-- Arrow 3->4 -->
+  <line x1="800" y1="185" x2="860" y2="185" stroke="#e2e8f0" stroke-width="2" opacity="0.6" marker-end="url(#arrowW)"/>
+
+  <!-- Step 4: Subscribe -->
+  <g filter="url(#shadow)">
+    <rect x="860" y="120" width="270" height="130" rx="12" fill="#374151"/>
+    <rect x="860" y="120" width="270" height="130" rx="12" fill="none" stroke="#6b7280" stroke-width="1"/>
+    <text x="995" y="155" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#9ca3af">4. SUBSCRIBE</text>
+    <text x="995" y="182" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_evoq</text>
+    <text x="995" y="204" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#d1d5db">Event subscriptions deliver</text>
+    <text x="995" y="220" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#d1d5db">new events to consumers</text>
+    <text x="995" y="240" text-anchor="middle" font-family="monospace" font-size="9" fill="#9ca3af">catch_up + live</text>
+  </g>
+
+  <!-- Separator -->
+  <line x1="60" y1="290" x2="1140" y2="290" stroke="#475569" stroke-width="1" stroke-dasharray="8,4" opacity="0.5"/>
+  <text x="600" y="315" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#64748b">WRITE SIDE (Commands) &#x2191; &#x2193; READ SIDE (Queries)</text>
+
+  <!-- === READ SIDE === -->
+
+  <!-- Step 5: Project -->
+  <g filter="url(#shadow)">
+    <rect x="160" y="350" width="260" height="130" rx="12" fill="url(#projGrad)"/>
+    <text x="290" y="385" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#a7f3d0">5. PROJECT</text>
+    <text x="290" y="412" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">evoq Projections</text>
+    <text x="290" y="434" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#a7f3d0">Transform events into</text>
+    <text x="290" y="450" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#a7f3d0">optimized read models</text>
+    <text x="290" y="470" text-anchor="middle" font-family="monospace" font-size="9" fill="#6ee7b7">handle_event(Event, State)</text>
+  </g>
+
+  <!-- Arrow 5->6 -->
+  <line x1="420" y1="415" x2="520" y2="415" stroke="#e2e8f0" stroke-width="2" opacity="0.6" marker-end="url(#arrowW)"/>
+
+  <!-- Step 6: Read Model (SQLite) -->
+  <g filter="url(#shadow)">
+    <rect x="520" y="350" width="260" height="130" rx="12" fill="#374151"/>
+    <rect x="520" y="350" width="260" height="130" rx="12" fill="none" stroke="#6b7280" stroke-width="1"/>
+    <text x="650" y="385" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#9ca3af">6. READ MODEL</text>
+    <text x="650" y="412" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">SQLite / ETS</text>
+    <text x="650" y="434" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#d1d5db">Denormalized tables</text>
+    <text x="650" y="450" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#d1d5db">optimized for query patterns</text>
+    <text x="650" y="470" text-anchor="middle" font-family="monospace" font-size="9" fill="#9ca3af">No joins, no calculations</text>
+  </g>
+
+  <!-- Arrow 6->7 -->
+  <line x1="780" y1="415" x2="860" y2="415" stroke="#e2e8f0" stroke-width="2" opacity="0.6" marker-end="url(#arrowW)"/>
+
+  <!-- Step 7: Query -->
+  <g filter="url(#shadow)">
+    <rect x="860" y="350" width="260" height="130" rx="12" fill="url(#queryGrad)"/>
+    <text x="990" y="385" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#fef3c7">7. QUERY</text>
+    <text x="990" y="412" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">Application Code</text>
+    <text x="990" y="434" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fef3c7">Fast reads from</text>
+    <text x="990" y="450" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fef3c7">pre-computed models</text>
+    <text x="990" y="470" text-anchor="middle" font-family="monospace" font-size="9" fill="#fde68a">SELECT * FROM table</text>
+  </g>
+
+  <!-- Subscription arrow from Step 4 down to Step 5 -->
+  <path d="M 920 250 L 920 290 Q 920 320 880 340 L 420 340 Q 380 340 350 360 L 350 350" stroke="#e2e8f0" stroke-width="2" opacity="0.4" stroke-dasharray="6,3" marker-end="url(#arrowW)"/>
+
+  <!-- === BOTTOM SECTION: Package roles === -->
+
+  <g transform="translate(60, 530)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#94a3b8">Package Responsibilities</text>
+
+    <rect x="0" y="18" width="14" height="14" rx="3" fill="#7c3aed"/>
+    <text x="22" y="29" font-family="system-ui, sans-serif" font-size="11" fill="#a78bfa">evoq — Aggregates, commands, event production, projections</text>
+
+    <rect x="0" y="42" width="14" height="14" rx="3" fill="#0ea5e9"/>
+    <text x="22" y="53" font-family="system-ui, sans-serif" font-size="11" fill="#38bdf8">reckon_db — Durable event storage (Khepri/Ra consensus)</text>
+
+    <rect x="0" y="66" width="14" height="14" rx="3" fill="#ec4899"/>
+    <text x="22" y="77" font-family="system-ui, sans-serif" font-size="11" fill="#f472b6">reckon_evoq — Connects evoq dispatch to reckon_db persistence</text>
+
+    <rect x="540" y="18" width="14" height="14" rx="3" fill="#10b981"/>
+    <text x="562" y="29" font-family="system-ui, sans-serif" font-size="11" fill="#34d399">reckon_gater — Shared types (event records, store interface)</text>
+
+    <rect x="540" y="42" width="14" height="14" rx="3" fill="#f59e0b"/>
+    <text x="562" y="53" font-family="system-ui, sans-serif" font-size="11" fill="#fbbf24">reckon_nifs — Optional Rust NIFs for hot-path acceleration</text>
+  </g>
+
+  <!-- Version -->
+  <text x="1140" y="685" text-anchor="end" font-family="system-ui, sans-serif" font-size="10" fill="#475569">
+    reckon_ecosystem v0.1.0
+  </text>
+</svg>

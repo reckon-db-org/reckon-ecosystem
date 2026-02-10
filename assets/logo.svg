@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#5b21b6;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="innerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a78bfa"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="55" fill="url(#logoGrad)"/>
+
+  <!-- Event stream lines (stacked, representing append-only log) -->
+  <rect x="25" y="28" width="70" height="8" rx="4" fill="#e9d5ff" opacity="0.9"/>
+  <rect x="25" y="42" width="70" height="8" rx="4" fill="#c4b5fd" opacity="0.8"/>
+  <rect x="25" y="56" width="70" height="8" rx="4" fill="#a78bfa" opacity="0.7"/>
+  <rect x="25" y="70" width="70" height="8" rx="4" fill="#8b5cf6" opacity="0.6"/>
+
+  <!-- Arrow pointing down (append direction) -->
+  <path d="M 60 85 L 50 78 L 55 78 L 55 74 L 65 74 L 65 78 L 70 78 Z" fill="#e9d5ff"/>
+
+  <!-- Three dots (distributed nodes) -->
+  <circle cx="38" cy="100" r="5" fill="#10b981"/>
+  <circle cx="60" cy="100" r="5" fill="#0ea5e9"/>
+  <circle cx="82" cy="100" r="5" fill="#f59e0b"/>
+</svg>
