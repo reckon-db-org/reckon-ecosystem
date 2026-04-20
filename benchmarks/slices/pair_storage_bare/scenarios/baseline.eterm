@@ -1,0 +1,8 @@
+#{
+    store_id            => bench_store,
+    event_size_bytes    => 256,
+    parallelism         => 1,
+    duration_seconds    => 60,
+    measure_max_seconds => 300,
+    tags                => [baseline, paired]
+}.

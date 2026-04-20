@@ -1,0 +1,9 @@
+%% Pair: gater API vs full evoq dispatch.
+%%
+%% The delta between these two runs is the evoq framework overhead
+%% ABOVE the gater — i.e., what the CQRS layer (aggregate + middleware
+%% + idempotency cache) adds on top of the bare API call.
+#{
+    base    => {pair_storage_via_gater,  smoke},
+    compare => {pair_dispatch_via_evoq,  smoke}
+}.

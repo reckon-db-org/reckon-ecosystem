@@ -1,0 +1,8 @@
+{application, reckon_ecosystem_benchmarks, [
+    {description, "Cross-layer paired and comparative benchmarks"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {applications, [kernel, stdlib, jsone]},
+    {env, []},
+    {modules, []}
+]}.

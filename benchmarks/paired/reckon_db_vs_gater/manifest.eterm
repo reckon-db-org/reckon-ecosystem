@@ -1,0 +1,8 @@
+%% Pair: reckon_db (bare storage) vs reckon_gater (API layer).
+%%
+%% The delta between these two runs is the gater's per-operation
+%% overhead at the given hardware profile and scenario shape.
+#{
+    base    => {pair_storage_bare,      smoke},
+    compare => {pair_storage_via_gater, smoke}
+}.

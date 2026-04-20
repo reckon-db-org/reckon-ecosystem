@@ -1,0 +1,11 @@
+%% Pair: bare storage vs full evoq stack.
+%%
+%% The delta between these two runs is the TOTAL stack overhead on
+%% top of bare reckon-db — gater + evoq combined. Useful as the
+%% "how expensive is the whole tower" number for evaluators deciding
+%% whether to adopt the full stack vs treat reckon-db as a storage
+%% primitive.
+#{
+    base    => {pair_storage_bare,      smoke},
+    compare => {pair_dispatch_via_evoq, smoke}
+}.
