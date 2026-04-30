@@ -51,11 +51,11 @@ Commands enter through evoq aggregates, produce domain events, which are persist
 
 | Package | Version | Description | Links |
 |---------|---------|-------------|-------|
-| **reckon_db** | 1.2.4 | BEAM-native distributed event store on Khepri/Ra | [GitHub](https://github.com/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
-| **reckon_gater** | 1.1.2 | Event store gateway, shared types, and store interface | [GitHub](https://github.com/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
-| **evoq** | 1.3.1 | Pure CQRS/ES framework — aggregates, commands, events, projections | [GitHub](https://github.com/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
-| **reckon_nifs** | 1.0.1 | Rust NIFs for high-performance operations (optional) | [GitHub](https://github.com/reckon-db-org/reckon-nifs) |
-| **reckon_evoq** | 1.1.4 | Adapter bridging evoq to reckon_db via reckon_gater | [GitHub](https://github.com/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
+| **reckon_db** | 1.2.4 | BEAM-native distributed event store on Khepri/Ra | [Codeberg](https://codeberg.org/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
+| **reckon_gater** | 1.1.2 | Event store gateway, shared types, and store interface | [Codeberg](https://codeberg.org/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
+| **evoq** | 1.3.1 | Pure CQRS/ES framework — aggregates, commands, events, projections | [Codeberg](https://codeberg.org/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
+| **reckon_nifs** | 1.0.1 | Rust NIFs for high-performance operations (optional) | [Codeberg](https://codeberg.org/reckon-db-org/reckon-nifs) |
+| **reckon_evoq** | 1.1.4 | Adapter bridging evoq to reckon_db via reckon_gater | [Codeberg](https://codeberg.org/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
 
 ---
 
@@ -134,7 +134,7 @@ Optional Rust NIFs providing native-speed implementations of performance-critica
 - **Timestamps** — Monotonic timestamp generation
 
 ```erlang
-{deps, [{reckon_nifs, {git, "https://github.com/reckon-db-org/reckon-nifs.git", {branch, "main"}}}]}.
+{deps, [{reckon_nifs, {git, "https://codeberg.org/reckon-db-org/reckon-nifs.git", {branch, "main"}}}]}.
 ```
 
 > See [reckon_nifs Guide](guides/reckon-nifs.md)
@@ -229,8 +229,8 @@ Built on Ra (used in RabbitMQ for queue replication) and Khepri (RabbitMQ's next
 
 ## Who Uses Reckon?
 
-- [**Hecate**](https://github.com/hecate-social/hecate-ecosystem) — AI-powered developer studio for Macula mesh applications
-- [**Macula**](https://github.com/macula-io/macula-ecosystem) — Distributed application platform with HTTP/3 mesh networking
+- [**Hecate**](https://codeberg.org/hecate-social/hecate-ecosystem) — AI-powered developer studio for Macula mesh applications
+- [**Macula**](https://codeberg.org/macula-io/macula-ecosystem) — Distributed application platform with HTTP/3 mesh networking
 
 ---
 
