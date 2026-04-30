@@ -51,11 +51,11 @@ Commands enter through evoq aggregates, produce domain events, which are persist
 
 | Package | Version | Description | Links |
 |---------|---------|-------------|-------|
-| **reckon_db** | 1.2.3 | BEAM-native distributed event store on Khepri/Ra | [GitHub](https://github.com/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
-| **reckon_gater** | 1.1.1 | Event store gateway, shared types, and store interface | [GitHub](https://github.com/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
-| **evoq** | 1.2.1 | Pure CQRS/ES framework — aggregates, commands, events, projections | [GitHub](https://github.com/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
+| **reckon_db** | 1.2.4 | BEAM-native distributed event store on Khepri/Ra | [GitHub](https://github.com/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
+| **reckon_gater** | 1.1.2 | Event store gateway, shared types, and store interface | [GitHub](https://github.com/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
+| **evoq** | 1.3.1 | Pure CQRS/ES framework — aggregates, commands, events, projections | [GitHub](https://github.com/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
 | **reckon_nifs** | 1.0.1 | Rust NIFs for high-performance operations (optional) | [GitHub](https://github.com/reckon-db-org/reckon-nifs) |
-| **reckon_evoq** | 1.1.3 | Adapter bridging evoq to reckon_db via reckon_gater | [GitHub](https://github.com/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
+| **reckon_evoq** | 1.1.4 | Adapter bridging evoq to reckon_db via reckon_gater | [GitHub](https://github.com/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
 
 ---
 
@@ -73,7 +73,7 @@ A BEAM-native, distributed event store built on [Khepri](https://github.com/rabb
 
 ```erlang
 %% Add to rebar.config
-{deps, [{reckon_db, "1.2.3"}]}.
+{deps, [{reckon_db, "1.2.4"}]}.
 ```
 
 > See [reckon_db Guide](guides/reckon-db.md)
@@ -92,7 +92,7 @@ The shared type definitions and store interface that all packages depend on. Pro
 - **Load Balancing** — Request routing and UCAN security
 
 ```erlang
-{deps, [{reckon_gater, "1.1.1"}]}.
+{deps, [{reckon_gater, "1.1.2"}]}.
 ```
 
 > See [reckon_gater Guide](guides/reckon-gater.md)
@@ -113,7 +113,7 @@ A pure, backend-agnostic CQRS and Event Sourcing framework. evoq doesn't know ab
 - **Subscriptions** — Event delivery with catch-up and live modes
 
 ```erlang
-{deps, [{evoq, "1.2.1"}]}.
+{deps, [{evoq, "1.3.1"}]}.
 ```
 
 > See [evoq Guide](guides/evoq.md)
@@ -151,7 +151,7 @@ Bridges evoq's CQRS framework to reckon_db's event store. This is the glue that 
 - Handles event serialization, subscription management, and telemetry
 
 ```erlang
-{deps, [{reckon_evoq, "1.1.3"}]}.
+{deps, [{reckon_evoq, "1.1.4"}]}.
 ```
 
 > See [reckon_evoq Guide](guides/reckon-evoq.md)
@@ -171,8 +171,8 @@ For a typical application, add all three core packages:
 ```erlang
 %% rebar.config
 {deps, [
-    {reckon_db, "1.2.3"},       %% Event store
-    {reckon_evoq, "1.1.3"},     %% Adapter (brings evoq as transitive dep)
+    {reckon_db, "1.2.4"},       %% Event store
+    {reckon_evoq, "1.1.4"},     %% Adapter (brings evoq as transitive dep)
     %% Optional:
     %% {reckon_nifs, {git, "...", {branch, "main"}}}
 ]}.

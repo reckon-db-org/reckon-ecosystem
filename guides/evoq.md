@@ -4,14 +4,14 @@
 
 evoq is a pure, backend-agnostic CQRS and Event Sourcing framework for Erlang/OTP. It provides behaviours for aggregates, projections, process managers, and more — without any opinion about how events are stored. This separation means your domain code is testable, portable, and decoupled from infrastructure.
 
-**Version:** 1.2.1 | **License:** Apache 2.0
+**Version:** 1.3.1 | **License:** Apache 2.0
 
 - [GitHub](https://github.com/reckon-db-org/evoq) | [HexDocs](https://hexdocs.pm/evoq)
 
 ## Installation
 
 ```erlang
-{deps, [{evoq, "1.2.1"}]}.
+{deps, [{evoq, "1.3.1"}]}.
 ```
 
 Note: evoq is typically pulled in as a transitive dependency of reckon_evoq.
@@ -202,6 +202,43 @@ execute(#{lifecycle_state := active}, #{command_type := <<"domain_cmd_v1">>} = C
     ...;
 execute(#{lifecycle_state := Other}, #{command_type := <<"domain_cmd_v1">>}) ->
     {error, {not_active, Other}}.
+```
+
+## Breaking Changes in 1.3.0
+
+evoq 1.3.0 introduced changes to the command envelope and dispatch pipeline. If you are upgrading from 1.2.x, review these carefully.
+
+### New `idempotency_key` field on `#evoq_command{}`
+
+The `#evoq_command{}` record now includes an optional `idempotency_key` field. Callers can set this to a unique value (e.g., a request ID) to enable idempotent command dispatch. If a command with the same idempotency key has already been processed, the dispatcher returns the previous result instead of executing again.
+
+```erlang
+Cmd = #{
+    command_type => <<"place_order_v1">>,
+    order_id => <<"ord-789">>,
+    idempotency_key => <<"req-abc-123">>  %% Optional — enables deduplication
+}.
+```
+
+If you do not set `idempotency_key`, it defaults to `undefined` and dispatch behaves as before (no deduplication).
+
+### Auto-generated `command_id`
+
+The dispatcher now auto-generates a `command_id` on the command envelope if one is not already set. Previously, dispatch modules were expected to implement `generate_command_id/2` to produce this value.
+
+**Migration:** Remove any `generate_command_id/2` implementations from your dispatch modules. The dispatcher handles this automatically. If you were relying on custom command ID generation, set `command_id` directly on the command map before dispatching.
+
+### `generate_command_id/2` removed from dispatch modules
+
+As a consequence of auto-generated command IDs, the `generate_command_id/2` callback has been removed from the dispatch behaviour. Any modules still exporting this function will get an "unused export" compiler warning. Remove these functions to clean up your codebase.
+
+```erlang
+%% BEFORE (1.2.x) — dispatch module had:
+generate_command_id(StreamId, Cmd) ->
+    <<"cmd-", StreamId/binary, "-", (uuid:get_v4())/binary>>.
+
+%% AFTER (1.3.0) — delete the function entirely.
+%% The dispatcher generates command_id automatically.
 ```
 
 ## Dependencies

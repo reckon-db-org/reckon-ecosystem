@@ -22,10 +22,10 @@ Edit `rebar.config`:
 ```erlang
 {deps, [
     %% Core event store
-    {reckon_db, "1.2.3"},
+    {reckon_db, "1.2.4"},
 
     %% CQRS adapter (brings evoq as transitive dependency)
-    {reckon_evoq, "1.1.3"}
+    {reckon_evoq, "1.1.4"}
 ]}.
 ```
 

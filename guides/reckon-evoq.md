@@ -4,7 +4,7 @@
 
 reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's event store. It translates between evoq's dispatch/subscribe API and reckon_gater's store interface, enabling seamless event persistence and delivery.
 
-**Version:** 1.1.3 | **License:** Apache 2.0
+**Version:** 1.1.4 | **License:** Apache 2.0
 
 - [GitHub](https://github.com/reckon-db-org/reckon-evoq) | [HexDocs](https://hexdocs.pm/reckon_evoq)
 
@@ -13,16 +13,16 @@ reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's ev
 ```erlang
 %% rebar.config
 {deps, [
-    {reckon_db, "1.2.3"},       %% Event store
-    {reckon_evoq, "1.1.3"}      %% Adapter (brings evoq as transitive dep)
+    {reckon_db, "1.2.4"},       %% Event store
+    {reckon_evoq, "1.1.4"}      %% Adapter (brings evoq as transitive dep)
 ]}.
 ```
 
 ## Key Design Decision
 
 reckon_evoq depends on:
-- **evoq** (~> 1.2) — The CQRS framework
-- **reckon_gater** (~> 1.1.1) — The shared types and store interface
+- **evoq** (~> 1.3) — The CQRS framework
+- **reckon_gater** (~> 1.1.2) — The shared types and store interface
 
 It does **NOT** depend on reckon_db directly. This is intentional — the adapter couples to the API contract (reckon_gater), not the implementation (reckon_db). Your application adds reckon_db separately.
 
@@ -162,8 +162,8 @@ Attach handlers for metrics:
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| evoq | ~> 1.2 | CQRS framework (dispatch, aggregate behaviours) |
-| reckon_gater | ~> 1.1.1 | Shared types (event records, store interface) |
+| evoq | ~> 1.3 | CQRS framework (dispatch, aggregate behaviours) |
+| reckon_gater | ~> 1.1.2 | Shared types (event records, store interface) |
 | telemetry | ~> 1.3 | Instrumentation |
 
 ## Related Guides
