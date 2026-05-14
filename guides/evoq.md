@@ -4,14 +4,14 @@
 
 evoq is a pure, backend-agnostic CQRS and Event Sourcing framework for Erlang/OTP. It provides behaviours for aggregates, projections, process managers, and more — without any opinion about how events are stored. This separation means your domain code is testable, portable, and decoupled from infrastructure.
 
-**Version:** 1.3.1 | **License:** Apache 2.0
+**Version:** 1.14.4 | **License:** Apache 2.0
 
-- [GitHub](https://github.com/reckon-db-org/evoq) | [HexDocs](https://hexdocs.pm/evoq)
+- [Codeberg](https://codeberg.org/reckon-db-org/evoq) | [HexDocs](https://hexdocs.pm/evoq)
 
 ## Installation
 
 ```erlang
-{deps, [{evoq, "1.3.1"}]}.
+{deps, [{evoq, "1.14.4"}]}.
 ```
 
 Note: evoq is typically pulled in as a transitive dependency of reckon_evoq.
@@ -204,7 +204,16 @@ execute(#{lifecycle_state := Other}, #{command_type := <<"domain_cmd_v1">>}) ->
     {error, {not_active, Other}}.
 ```
 
-## Breaking Changes in 1.3.0
+## Notable Changes Through 1.14.x
+
+Several pipeline fixes have shipped since the original 1.3 line. The big ones to be aware of:
+
+- **1.14.4** — `evoq_aggregate` now recognises every shape of the `wrong_expected_version` error (`{error, wrong_expected_version}`, `{error, {wrong_expected_version, Actual}}`, and reckon-db's current `{error, {wrong_expected_version, Expected, Actual}}`). Previous releases silently dropped the 3-tuple form on the floor and surfaced the raw conflict instead of triggering rebuild + retry.
+- **1.14.3** — `evoq_aggregate:rebuild_from_events/3` reports version `-1` for an empty stream, matching `load_or_init/3`. Earlier `0` caused infinite retry loops against fresh Ra streams.
+- **1.14.2** — Header references updated to `reckon_gater_types.hrl` (from `esdb_gater_types.hrl`) following the reckon-gater 2.0.0 rename. No API changes.
+- **1.13.x** — Store inspector behaviours expanded.
+
+## Breaking Changes in 1.3.0 (historical)
 
 evoq 1.3.0 introduced changes to the command envelope and dispatch pipeline. If you are upgrading from 1.2.x, review these carefully.
 

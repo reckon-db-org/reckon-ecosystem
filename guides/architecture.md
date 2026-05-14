@@ -2,7 +2,7 @@
 
 ## Package Architecture
 
-The Reckon ecosystem is organized as five packages with clear dependency boundaries.
+The Reckon ecosystem is organized as six packages with clear dependency boundaries.
 
 ### Dependency Graph
 
@@ -19,6 +19,9 @@ Level 2 (depends on gater):
 
 Level 3 (depends on gater + evoq):
   reckon_evoq     — Adapter bridging evoq to reckon_db
+
+Level 4 (depends on gater + db):
+  reckon_gateway  — gRPC façade for polyglot clients
 ```
 
 The critical insight: **reckon_evoq depends on evoq + reckon_gater, NOT on reckon_db directly.** This means the adapter couples to the API contract (reckon_gater), not the implementation (reckon_db).
@@ -48,25 +51,29 @@ The critical insight: **reckon_evoq depends on evoq + reckon_gater, NOT on recko
    └── Catch-up + live delivery
 ```
 
-### The evoq_event Envelope
+### The reckon_event Envelope
 
-Every domain event is wrapped in an envelope that adds operational metadata:
+Every domain event is wrapped in the canonical `#reckon_event{}` record (defined in `reckon-gater`, header `reckon_gater/include/reckon_gater_types.hrl`). The envelope adds operational metadata:
 
 ```erlang
-#evoq_event{
-    event_id        :: binary(),           %% Unique UUID
-    event_type      :: binary(),           %% e.g., <<"user_registered_v1">>
-    stream_id       :: binary(),           %% e.g., <<"user-user123">>
-    version         :: non_neg_integer(),  %% Stream position (0-based)
-    data            :: map(),              %% YOUR business event payload
-    metadata        :: map(),              %% Correlation, causation, context
-    tags            :: [binary()],         %% Cross-stream query tags
-    timestamp       :: integer(),          %% Event creation time
-    epoch_us        :: integer()           %% Microsecond precision
+#reckon_event{
+    event_id              :: binary(),           %% UUIDv7
+    event_type            :: binary(),           %% e.g., <<"user_registered_v1">>
+    stream_id             :: binary(),           %% e.g., <<"user-user123">>
+    version               :: non_neg_integer(),  %% Stream position (0-based)
+    data                  :: map() | binary(),   %% YOUR business event payload
+    metadata              :: map(),              %% Correlation, causation, context
+    tags                  :: [binary()] | undefined, %% Cross-stream query tags
+    timestamp             :: integer(),          %% Event creation time (epoch ms)
+    epoch_us              :: integer(),          %% Microsecond precision
+    data_content_type     :: binary(),           %% Defaults to application/json
+    metadata_content_type :: binary()
 }
 ```
 
 Your aggregate only produces the `data` field. The envelope is added by the infrastructure.
+
+> **Tamper-resistance note:** the record carries no `hash`, `signature`, or `prev_event_hash` field today. See *On-Disk Format and Tamper Resistance* below.
 
 ### Stream Organization
 
@@ -226,6 +233,30 @@ handle_event(#{event_type := <<"order_placed_v2">>} = E, State) ->
 
 Old events are never modified. New versions add fields. This preserves the immutable nature of the event log.
 
+## On-Disk Format and Tamper Resistance
+
+The on-disk event store is built on Khepri (tree-structured storage) and Ra (Raft consensus). Both layers protect against **corruption** via WAL CRCs, but neither protects against **tampering** — an actor with filesystem or memory access can modify stored events without detection.
+
+Today the data path looks like this:
+
+| Layer | What it stores | Integrity property |
+|-------|----------------|--------------------|
+| `#reckon_event{}` record | Plain Erlang record built in `reckon_db_streams:create_event_record/5` | No hash, no signature, no `prev_event_hash` chain |
+| Snapshot record | `#reckon_snapshot{}` via `reckon_db_snapshots_store:put/2` | Trusted blob; read path performs no verification |
+| Khepri tree node | Result of `khepri:put/3` on the record | Uses Ra's WAL CRC — detects bit-flips, not tampering |
+| Ra WAL / segments | Erlang binary frames | CRC32 per frame — corruption-resistant only |
+
+The `reckon_db_crypto_nif` crate already ships Ed25519 verification and SHA-256 hashing, but those NIFs are wired only into capability-token verification (`reckon_gater_capability` / `reckon_db_capability_verifier`), not into the event write or read path.
+
+If you need stronger guarantees, see the [hardening discussion in the README](../README.md) and the project roadmap. Tamper resistance options under consideration:
+
+- **Per-event HMAC** over canonical bytes, keyed by store identity
+- **Hash-chained events** (`prev_event_hash` on `#reckon_event{}` so each stream is a hash chain)
+- **Signed snapshots** via Ed25519 (the NIF is already there)
+- **Sealed segments** — periodic Merkle roots committed to an external log or co-signed by a quorum
+
+None of these are present today. The CRC layer is sufficient for *accidental* corruption; trust boundaries must currently be enforced *around* the BEAM node (filesystem permissions, dm-verity, FDE, container immutability).
+
 ## Cross-Stream Queries
 
 Tags enable querying events across streams:
@@ -247,3 +278,4 @@ Event = #{
 - [evoq Guide](evoq.md) — Framework behaviours and patterns
 - [reckon_db Guide](reckon-db.md) — Store configuration and operations
 - [reckon_evoq Guide](reckon-evoq.md) — Adapter configuration
+- [reckon_gateway Guide](reckon-gateway.md) — gRPC façade for polyglot clients

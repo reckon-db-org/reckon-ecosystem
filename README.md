@@ -9,7 +9,7 @@
 
   <h3>BEAM-native Event Sourcing &amp; CQRS Infrastructure</h3>
 
-  <p><em>Five Erlang/OTP packages that give your applications an immutable, distributed event store with a pure CQRS framework.</em></p>
+  <p><em>Six Erlang/OTP packages that give your applications an immutable, distributed event store with a pure CQRS framework — plus a polyglot gRPC gateway.</em></p>
 
   [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
   [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg)](https://buymeacoffee.com/rlefever)
@@ -51,11 +51,12 @@ Commands enter through evoq aggregates, produce domain events, which are persist
 
 | Package | Version | Description | Links |
 |---------|---------|-------------|-------|
-| **reckon_db** | 1.2.4 | BEAM-native distributed event store on Khepri/Ra | [Codeberg](https://codeberg.org/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
-| **reckon_gater** | 1.1.2 | Event store gateway, shared types, and store interface | [Codeberg](https://codeberg.org/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
-| **evoq** | 1.3.1 | Pure CQRS/ES framework — aggregates, commands, events, projections | [Codeberg](https://codeberg.org/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
-| **reckon_nifs** | 1.0.1 | Rust NIFs for high-performance operations (optional) | [Codeberg](https://codeberg.org/reckon-db-org/reckon-nifs) |
-| **reckon_evoq** | 1.1.4 | Adapter bridging evoq to reckon_db via reckon_gater | [Codeberg](https://codeberg.org/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
+| **reckon_db** | 2.0.0 | BEAM-native distributed event store on Khepri/Ra | [Codeberg](https://codeberg.org/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
+| **reckon_gater** | 2.0.1 | Event store gateway, shared types, and store interface | [Codeberg](https://codeberg.org/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
+| **evoq** | 1.14.4 | Pure CQRS/ES framework — aggregates, commands, events, projections | [Codeberg](https://codeberg.org/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
+| **reckon_nifs** | 2.0.0 | Rust NIFs for high-performance operations (optional) | [Codeberg](https://codeberg.org/reckon-db-org/reckon-nifs) |
+| **reckon_evoq** | 2.0.0 | Adapter bridging evoq to reckon_db via reckon_gater | [Codeberg](https://codeberg.org/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
+| **reckon_gateway** | 0.1.0 | gRPC gateway exposing ReckonDB to polyglot clients | [Codeberg](https://codeberg.org/reckon-db-org/reckon-gateway) |
 
 ---
 
@@ -73,7 +74,7 @@ A BEAM-native, distributed event store built on [Khepri](https://github.com/rabb
 
 ```erlang
 %% Add to rebar.config
-{deps, [{reckon_db, "1.2.4"}]}.
+{deps, [{reckon_db, "2.0.0"}]}.
 ```
 
 > See [reckon_db Guide](guides/reckon-db.md)
@@ -92,7 +93,7 @@ The shared type definitions and store interface that all packages depend on. Pro
 - **Load Balancing** — Request routing and UCAN security
 
 ```erlang
-{deps, [{reckon_gater, "1.1.2"}]}.
+{deps, [{reckon_gater, "2.0.1"}]}.
 ```
 
 > See [reckon_gater Guide](guides/reckon-gater.md)
@@ -113,7 +114,7 @@ A pure, backend-agnostic CQRS and Event Sourcing framework. evoq doesn't know ab
 - **Subscriptions** — Event delivery with catch-up and live modes
 
 ```erlang
-{deps, [{evoq, "1.3.1"}]}.
+{deps, [{evoq, "1.14.4"}]}.
 ```
 
 > See [evoq Guide](guides/evoq.md)
@@ -122,16 +123,16 @@ A pure, backend-agnostic CQRS and Event Sourcing framework. evoq doesn't know ab
 
 ### reckon_nifs — Rust Acceleration
 
-Optional Rust NIFs providing native-speed implementations of performance-critical operations.
+Optional Rust NIFs providing native-speed implementations of performance-critical operations. v2.0.0 organises NIFs as layer-qualified crates targeting either `reckon-db` or `reckon-gater`.
 
-**Operations:**
-- **CRC32** — Cyclic redundancy checks
-- **Hashing** — Fast hash computation
-- **Checksums** — Data integrity verification
-- **Compression** — Efficient data compression
-- **Serialization** — High-speed encoding/decoding
-- **Filtering** — Optimized event filtering
-- **Timestamps** — Monotonic timestamp generation
+**NIF crates:**
+- **`reckon_db_hash_nif`** — xxHash / FNV-1a for partitioning and routing
+- **`reckon_db_crypto_nif`** — Ed25519 verify, SHA-256, secure compare (capability verification)
+- **`reckon_db_archive_nif`** — LZ4 / Zstd compression for archive files
+- **`reckon_db_aggregate_nif`** — Vectorised event aggregation
+- **`reckon_db_filter_nif`** — Regex / pattern matching against event streams
+- **`reckon_db_graph_nif`** — Graph algorithms (petgraph) for causation / lineage queries
+- **`reckon_gater_crypto_nif`** — Base58 encode / decode, UCAN resource pattern matching
 
 ```erlang
 {deps, [{reckon_nifs, {git, "https://codeberg.org/reckon-db-org/reckon-nifs.git", {branch, "main"}}}]}.
@@ -151,10 +152,32 @@ Bridges evoq's CQRS framework to reckon_db's event store. This is the glue that 
 - Handles event serialization, subscription management, and telemetry
 
 ```erlang
-{deps, [{reckon_evoq, "1.1.4"}]}.
+{deps, [{reckon_evoq, "2.0.0"}]}.
 ```
 
 > See [reckon_evoq Guide](guides/reckon-evoq.md)
+
+---
+
+### reckon_gateway — Polyglot gRPC Access
+
+A gRPC façade for ReckonDB. Lets Go, .NET, Rust, Python, or any gRPC-capable language consume the event store from outside the BEAM. Built on top of `reckon_gater` and `reckon_db`.
+
+**Services exposed:**
+- `StreamService` — Append, read, list, delete event streams
+- `SubscriptionService` — Persistent subscriptions (server-streaming)
+- `SnapshotService` — Aggregate state snapshots
+- `TemporalService` — Time-based event queries
+- `CausationService` — Event lineage and correlation tracking
+- `SchemaService` — Event schema registration and upcasting
+- `AdminService` — Store inspection, scavenging, stream links
+- `HealthService` — Health checks, cluster diagnostics, memory pressure
+
+```bash
+docker run -p 50051:50051 -v reckon-data:/app/data reckon-gateway
+```
+
+> See [reckon_gateway Guide](guides/reckon-gateway.md)
 
 ---
 
@@ -171,8 +194,8 @@ For a typical application, add all three core packages:
 ```erlang
 %% rebar.config
 {deps, [
-    {reckon_db, "1.2.4"},       %% Event store
-    {reckon_evoq, "1.1.4"},     %% Adapter (brings evoq as transitive dep)
+    {reckon_db, "2.0.0"},       %% Event store
+    {reckon_evoq, "2.0.0"},     %% Adapter (brings evoq as transitive dep)
     %% Optional:
     %% {reckon_nifs, {git, "...", {branch, "main"}}}
 ]}.
@@ -180,11 +203,12 @@ For a typical application, add all three core packages:
 
 The dependency chain:
 ```
-reckon_nifs     (standalone, optional)
-reckon_gater    (standalone, shared types)
-reckon_db       (depends on reckon_gater)
-evoq            (standalone, no reckon deps)
-reckon_evoq     (depends on evoq + reckon_gater)
+reckon_nifs       (standalone, optional)
+reckon_gater      (standalone, shared types)
+reckon_db         (depends on reckon_gater)
+evoq              (standalone, no reckon deps)
+reckon_evoq       (depends on evoq + reckon_gater)
+reckon_gateway    (depends on reckon_gater + reckon_db; ships as gRPC server)
 ```
 
 ---
@@ -204,6 +228,7 @@ reckon_evoq     (depends on evoq + reckon_gater)
 - [**evoq**](guides/evoq.md) — CQRS/ES framework guide
 - [**reckon_nifs**](guides/reckon-nifs.md) — Rust NIF acceleration
 - [**reckon_evoq**](guides/reckon-evoq.md) — Integration adapter
+- [**reckon_gateway**](guides/reckon-gateway.md) — gRPC façade for polyglot clients
 
 ---
 
@@ -236,7 +261,8 @@ Built on Ra (used in RabbitMQ for queue replication) and Khepri (RabbitMQ's next
 
 ## Community
 
-- **GitHub**: [reckon-db-org](https://github.com/reckon-db-org)
+- **Codeberg**: [reckon-db-org](https://codeberg.org/reckon-db-org) (canonical)
+- **GitHub mirror**: [reckon-db-org](https://github.com/reckon-db-org) (read-only)
 - **Hex.pm**: [reckon_db](https://hex.pm/packages/reckon_db) | [evoq](https://hex.pm/packages/evoq) | [reckon_gater](https://hex.pm/packages/reckon_gater) | [reckon_evoq](https://hex.pm/packages/reckon_evoq)
 
 ## License

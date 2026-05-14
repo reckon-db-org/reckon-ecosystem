@@ -2,7 +2,7 @@
 
 ## What is the Reckon Ecosystem?
 
-The Reckon Ecosystem is a collection of five Erlang/OTP packages that together provide a complete **event sourcing and CQRS infrastructure** for BEAM applications.
+The Reckon Ecosystem is a collection of six Erlang/OTP packages that together provide a complete **event sourcing and CQRS infrastructure** for BEAM applications, plus a gRPC gateway for polyglot consumers.
 
 Unlike traditional approaches that bolt event sourcing onto existing databases (PostgreSQL + Commanded, EventStoreDB + gRPC clients), Reckon runs entirely within the BEAM VM. Your event store is an Erlang process. Your consensus protocol is Raft, implemented by Ra. Your storage layer is Khepri — RabbitMQ's next-generation metadata store.
 
@@ -13,7 +13,7 @@ This means:
 - **Distribution built-in** — Raft consensus replicates events across nodes
 - **Hot code upgrades** — Update your event store without downtime
 
-## The Five Packages
+## The Six Packages
 
 ### The Foundation: reckon_gater
 
@@ -33,7 +33,11 @@ This means:
 
 ### The Accelerator: reckon_nifs
 
-`reckon_nifs` provides optional Rust NIFs for performance-critical operations like CRC32 checksums, hashing, compression, and serialization. When present, reckon_db uses them automatically for hot-path operations.
+`reckon_nifs` provides optional Rust NIFs for performance-critical operations: xxHash partitioning, LZ4/Zstd compression for archives, regex filtering, graph algorithms, and Ed25519 signature verification for capability tokens. When present, the consuming modules detect them via `persistent_term` and switch to the fast path automatically.
+
+### The Façade: reckon_gateway
+
+`reckon_gateway` exposes ReckonDB over gRPC so non-BEAM clients — Go, .NET, Rust, Python — can use it as their event store. It re-uses the same store contracts as native BEAM clients (via `reckon_gater`), just over the wire.
 
 ## Design Philosophy
 
@@ -77,4 +81,4 @@ Your Application
 
 - [Getting Started](getting-started.md) — Install and build your first aggregate
 - [Architecture](architecture.md) — Deep-dive into how the packages work together
-- Individual package guides: [reckon_db](reckon-db.md), [evoq](evoq.md), [reckon_gater](reckon-gater.md), [reckon_evoq](reckon-evoq.md), [reckon_nifs](reckon-nifs.md)
+- Individual package guides: [reckon_db](reckon-db.md), [evoq](evoq.md), [reckon_gater](reckon-gater.md), [reckon_evoq](reckon-evoq.md), [reckon_nifs](reckon-nifs.md), [reckon_gateway](reckon-gateway.md)
