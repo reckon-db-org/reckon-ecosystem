@@ -307,7 +307,7 @@ Streams that existed before integrity was enabled keep their legacy events untou
 
 ### What this does NOT catch (current limitations)
 
-- **Backward-direction reads** bypass chain verification in 2.1.0. Forward-direction reads are the verified path.
+- ~~**Backward-direction reads** bypass chain verification in 2.1.0.~~ **Closed in reckon-db 2.1.1** — backward reads verify the same chain as forward reads; only the result-ordering of the returned events differs by direction.
 - **Cross-stream catch-up** does per-event MAC only — no chain walk, since cross-stream reads sort by `epoch_us` and have no single chain.
 - **Operator-level Khepri tampering** can plant any value; the system *detects* this on the next read but does not prevent it. Trust boundaries around the BEAM process (filesystem permissions, dm-verity, FDE, container immutability) remain operationally relevant.
 - **An attacker who controls both the central orchestrator AND code execution at the storage node** has the HMAC key and can produce events that verify. No architectural mitigation suffices at that point; the operator is in incident-response territory regardless.
