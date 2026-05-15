@@ -4,7 +4,7 @@
 
 reckon_db is a distributed event store built entirely in Erlang/OTP. It uses [Khepri](https://github.com/rabbitmq/khepri) for tree-structured data storage and [Ra](https://github.com/rabbitmq/ra) for Raft consensus. Events are stored in append-only streams and replicated across cluster nodes.
 
-**Version:** 2.0.0 | **License:** Apache 2.0
+**Version:** 2.1.0 | **License:** Apache 2.0
 
 - [Codeberg](https://codeberg.org/reckon-db-org/reckon-db) | [HexDocs](https://hexdocs.pm/reckon_db)
 
@@ -12,7 +12,7 @@ reckon_db is a distributed event store built entirely in Erlang/OTP. It uses [Kh
 
 ```erlang
 %% rebar.config
-{deps, [{reckon_db, "2.0.0"}]}.
+{deps, [{reckon_db, "2.1.0"}]}.
 ```
 
 ## Key Concepts
@@ -184,7 +184,7 @@ Each store runs its own supervision subtree. You can have multiple independent s
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| reckon_gater | ~> 2.0 | Shared types and store interface |
+| reckon_gater | ~> 2.1 | Shared types and store interface |
 | khepri | 0.17.2 | Tree-structured storage |
 | telemetry | 1.3.0 | Metrics and instrumentation |
 | reckon_nifs | (optional) | Rust NIF acceleration |

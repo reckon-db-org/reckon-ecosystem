@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-05-15
+
+### Tracks the 2.1 / 1.15 / 0.2 release wave
+
+This release synchronises the ecosystem documentation with the
+tamper-resistance work shipped across five packages:
+
+- `reckon-gater` **2.1.0** (hex) — schema additions + integrity primitives
+- `reckon-db` **2.1.0** (hex) — Layers 2–5: write-time integrity,
+  verify-at-read, snapshot anchor, subscription catch-up verification
+- `evoq` **1.15.0** (hex) — `prev_event_hash` propagation,
+  `integrity_violation` non-retriable classification (Layer 6)
+- `reckon-evoq` **2.1.0** (hex) — chain hash forwarding through the adapter
+- `reckon-gateway` **0.2.0** (git tag + Docker; hex blocked by git deps) —
+  wire-format additions + `GetServerInfo` RPC (Layer 7)
+
+### Changed
+
+- **README.md** — package version table updated; install snippets
+  bumped to the 2.1 wave; each row now flags its tamper-resistance
+  contribution.
+- **guides/architecture.md** — *On-Disk Format and Tamper Resistance*
+  section rewritten from a roadmap stub to a full reference of the
+  shipped feature: per-store opt-in configuration, schema fields,
+  canonical encoding, verify-at-read enforcement across all
+  surfaces, `chain_start_version` migration story, an attack/detection
+  matrix, and an explicit limitations list. Points at
+  [`reckon-db/plans/PLAN_TAMPER_RESISTANCE.md`](https://codeberg.org/reckon-db-org/reckon-db/src/branch/main/plans/PLAN_TAMPER_RESISTANCE.md)
+  for the full design and the deferred-scope list.
+- **guides/evoq.md** — *Notable Changes* extended with 1.15.0
+  entry covering the `prev_event_hash` propagation and the
+  integrity-violation classifier.
+- **guides/reckon-evoq.md**, **guides/reckon-db.md**,
+  **guides/reckon-gater.md**, **guides/reckon-gateway.md**,
+  **guides/getting-started.md** — version bumps + dependency
+  constraint updates (`~> 2.1` / `~> 1.15`) to match the new wave.
+
+### Known Gaps (carried, not closed in 0.3.0)
+
+- **`assets/dependency-graph.svg`** and **`assets/ecosystem-overview.svg`**
+  still reflect pre-2.1 visual state. Carried over from the 0.2.0
+  changelog; not regressed, just unfinished. Updating an SVG by
+  hand is meaningfully more work than updating text, and the
+  package-table in README is the primary version-of-truth.
+
 ## [0.2.0] - 2026-05-14
 
 ### Added

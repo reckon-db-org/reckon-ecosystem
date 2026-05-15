@@ -4,11 +4,11 @@
 
 reckon_gateway is a gRPC server that wraps the full ReckonDB API. It lets polyglot clients — Go, .NET, Rust, Python, anything that speaks gRPC — use ReckonDB as their event store without running on the BEAM. Internally it consumes `reckon-db` and `reckon-gater`, so it shares the exact same semantics as a native BEAM client.
 
-**Version:** 0.1.0 | **License:** Apache 2.0
+**Version:** 0.2.0 | **License:** Apache 2.0
 
 - [Codeberg](https://codeberg.org/reckon-db-org/reckon-gateway)
 
-> **Status:** 0.1.0. The proto contracts are stabilising; expect minor breaks until 1.0.0.
+> **Status:** 0.2.0. The proto contracts are stabilising; expect minor breaks until 1.0.0. 0.2.0 adds the tamper-resistance wire format (`RecordedEvent.prev_event_hash`, `SnapshotRecord.anchor_hash`) and the `GetServerInfo` RPC on `HealthService` — see the architecture guide's *On-Disk Format and Tamper Resistance* section.
 
 ## Quick Start
 

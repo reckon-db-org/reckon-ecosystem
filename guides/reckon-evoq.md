@@ -4,7 +4,7 @@
 
 reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's event store. It translates between evoq's dispatch/subscribe API and reckon_gater's store interface, enabling seamless event persistence and delivery.
 
-**Version:** 2.0.0 | **License:** Apache 2.0
+**Version:** 2.1.0 | **License:** Apache 2.0
 
 - [Codeberg](https://codeberg.org/reckon-db-org/reckon-evoq) | [HexDocs](https://hexdocs.pm/reckon_evoq)
 
@@ -13,16 +13,16 @@ reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's ev
 ```erlang
 %% rebar.config
 {deps, [
-    {reckon_db, "2.0.0"},       %% Event store
-    {reckon_evoq, "2.0.0"}      %% Adapter (brings evoq as transitive dep)
+    {reckon_db, "2.1.0"},       %% Event store
+    {reckon_evoq, "2.1.0"}      %% Adapter (brings evoq as transitive dep)
 ]}.
 ```
 
 ## Key Design Decision
 
 reckon_evoq depends on:
-- **evoq** (~> 1.14) — The CQRS framework
-- **reckon_gater** (~> 2.0) — The shared types and store interface
+- **evoq** (~> 1.15) — The CQRS framework
+- **reckon_gater** (~> 2.1) — The shared types and store interface
 
 It does **NOT** depend on reckon_db directly. This is intentional — the adapter couples to the API contract (reckon_gater), not the implementation (reckon_db). Your application adds reckon_db separately.
 
@@ -162,8 +162,8 @@ Attach handlers for metrics:
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| evoq | ~> 1.14 | CQRS framework (dispatch, aggregate behaviours) |
-| reckon_gater | ~> 2.0 | Shared types (event records, store interface) |
+| evoq | ~> 1.15 | CQRS framework (dispatch, aggregate behaviours) |
+| reckon_gater | ~> 2.1 | Shared types (event records, store interface) |
 | telemetry | ~> 1.3 | Instrumentation |
 
 > **2.0.0 migration note:** reckon-evoq 2.0.0 consumes the renamed reckon-gater 2.0.0 API (`reckon_gater_api:*`, `reckon_gater_types.hrl`). Apps that go through `reckon_evoq_adapter` via `evoq_dispatcher` upgrade as a drop-in. Apps that reached directly into `esdb_gater_api` must do their own migration per reckon-gater 2.0.0's release notes.

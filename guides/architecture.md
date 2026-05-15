@@ -73,7 +73,7 @@ Every domain event is wrapped in the canonical `#reckon_event{}` record (defined
 
 Your aggregate only produces the `data` field. The envelope is added by the infrastructure.
 
-> **Tamper-resistance note:** the record carries no `hash`, `signature`, or `prev_event_hash` field today. See *On-Disk Format and Tamper Resistance* below.
+> **Tamper-resistance note** (2.1+): the record gained `prev_event_hash`, `mac`, and (reserved) `signature` fields in `reckon-gater` 2.1.0. Populated on integrity-enabled stores; default `undefined` for legacy events. See *On-Disk Format and Tamper Resistance* below.
 
 ### Stream Organization
 
@@ -235,27 +235,95 @@ Old events are never modified. New versions add fields. This preserves the immut
 
 ## On-Disk Format and Tamper Resistance
 
-The on-disk event store is built on Khepri (tree-structured storage) and Ra (Raft consensus). Both layers protect against **corruption** via WAL CRCs, but neither protects against **tampering** — an actor with filesystem or memory access can modify stored events without detection.
+> **Status as of the 2.1 wave** (`reckon-gater` 2.1.0, `reckon-db` 2.1.0, `evoq` 1.15.0, `reckon-evoq` 2.1.0, `reckon-gateway` 0.2.0): tamper-evident events and snapshots are now available as an opt-in per-store feature. Stores configured with `integrity` enabled write HMAC-protected, chain-hashed events and verify them on every read surface.
 
-Today the data path looks like this:
+The on-disk event store is built on Khepri (tree-structured storage) and Ra (Raft consensus). Both layers protect against **corruption** via WAL CRCs — but CRCs do not protect against **intentional tampering**, since an attacker can recompute them trivially. The 2.1 wave addresses the gap above the storage primitive.
 
-| Layer | What it stores | Integrity property |
-|-------|----------------|--------------------|
-| `#reckon_event{}` record | Plain Erlang record built in `reckon_db_streams:create_event_record/5` | No hash, no signature, no `prev_event_hash` chain |
-| Snapshot record | `#reckon_snapshot{}` via `reckon_db_snapshots_store:put/2` | Trusted blob; read path performs no verification |
-| Khepri tree node | Result of `khepri:put/3` on the record | Uses Ra's WAL CRC — detects bit-flips, not tampering |
-| Ra WAL / segments | Erlang binary frames | CRC32 per frame — corruption-resistant only |
+### Per-store opt-in
 
-The `reckon_db_crypto_nif` crate already ships Ed25519 verification and SHA-256 hashing, but those NIFs are wired only into capability-token verification (`reckon_gater_capability` / `reckon_db_capability_verifier`), not into the event write or read path.
+Tamper resistance is **off by default**. To enable on a store:
 
-If you need stronger guarantees, see the [hardening discussion in the README](../README.md) and the project roadmap. Tamper resistance options under consideration:
+```erlang
+#store_config{
+    %% ... existing fields ...
+    integrity = #{
+        enabled => true,
+        key_source => {env_var, <<"RECKON_DB_KEY_MY_STORE">>}
+        %% or: {sealed_file, "/path/to/key"}  (mode 0600 required)
+    }
+}.
+```
 
-- **Per-event HMAC** over canonical bytes, keyed by store identity
-- **Hash-chained events** (`prev_event_hash` on `#reckon_event{}` so each stream is a hash chain)
-- **Signed snapshots** via Ed25519 (the NIF is already there)
-- **Sealed segments** — periodic Merkle roots committed to an external log or co-signed by a quorum
+The key is 32 random bytes (HMAC-SHA256). Loaded into `persistent_term` at store startup; cleared on shutdown. Misconfiguration (missing env, bad base64, insecure file mode, wrong size) is **fail-fast** — the store refuses to start rather than silently advertise integrity it cannot deliver.
 
-None of these are present today. The CRC layer is sufficient for *accidental* corruption; trust boundaries must currently be enforced *around* the BEAM node (filesystem permissions, dm-verity, FDE, container immutability).
+### What gets stored
+
+The `#reckon_event{}` record (in `reckon-gater`) carries three integrity fields:
+
+| Field | Purpose | When populated |
+|-------|---------|----------------|
+| `prev_event_hash :: binary() \| undefined` | SHA-256 chain hash of the predecessor event in the stream. For version 0, the genesis value (32 zero bytes). Verifiable WITHOUT the HMAC key — projections and external (gateway) consumers can chain-check independently. | Events written on integrity-enabled stores |
+| `mac :: {KeyId, MacBytes} \| undefined` | HMAC-SHA256 over canonical bytes of the event, domain-tagged `evt\|`. Symmetric secret bound to the per-store key. Verified at the storage boundary only; **never** propagated to external consumers. | Events written on integrity-enabled stores |
+| `signature :: binary() \| undefined` | Reserved for Ed25519 cross-trust-domain authenticity in a future release. Not populated in 2.1.x. | Not populated in 2.1.x |
+
+The `#reckon_snapshot{}` record carries two analogous fields:
+
+| Field | Purpose |
+|-------|---------|
+| `anchor_hash :: binary() \| undefined` | Chain hash of the event at the snapshot's version, captured at save time. Re-verified at load time to detect both snapshot tampering AND post-snapshot stream tampering. |
+| `mac :: {KeyId, MacBytes} \| undefined` | HMAC-SHA256 over the snapshot record, domain-tagged `snap\|`. The domain tag prevents an attacker who recovers one MAC from replaying it onto a different protocol element. |
+
+### Canonical encoding
+
+Both the chain hash and the MAC are computed over `term_to_binary/2` with the `deterministic` flag (OTP 26+), which sorts map keys lexicographically before encoding so the same record always produces byte-identical output across nodes and OTP minor versions. The algorithm identifier exposed to clients is `"sha256-deterministic-etf-v1"` — bumped when the canonical encoding or hash function changes.
+
+### Verify-at-read enforcement
+
+Verification runs at every read surface:
+
+- **Storage reads** (`reckon_db_streams:read/6`): forward-direction reads verify each event's MAC and chain link against a running tip. Failure surfaces as `{error, {integrity_violation, _}}`. Non-retriable, distinct from `wrong_expected_version`. New `Opts` map supports `verify => skip_legacy | strict | skip_all` — default `skip_legacy` returns pre-2.1 legacy events untouched while strictly checking integrity-bearing events.
+- **Snapshot loads**: `reckon_db_snapshots:load/2,3` recompute the chain hash from the underlying event at load time and verify against the recorded `anchor_hash`. This catches stream tampering that occurred *after* the snapshot was saved, even when the snapshot itself is intact. Failed snapshots are refused; the aggregate falls back to full replay from the per-stream `chain_start_version` watermark.
+- **Aggregate rebuild** (via `evoq` 1.15.0): the dispatcher recognises `{error, {integrity_violation, _}}` as terminal; the retry loop does not engage. `evoq_aggregate:is_integrity_violation/1` is the public classifier.
+- **Subscription catch-up**: every integrity-bearing event passes a per-event MAC check before delivery; a tampered event halts replay and sends `{subscription_error, {integrity_violation, _}}` to the subscriber.
+- **Gateway egress** (`reckon-gateway` 0.2.0): the `prev_event_hash` field is exposed on the wire; the `mac` field is **never** transmitted (it is a symmetric secret). Polyglot clients verify chain continuity with their own SHA-256 implementation; the `GetServerInfo` RPC advertises the algorithm identifier and key ID.
+
+### Migration story — `chain_start_version` watermark
+
+Streams that existed before integrity was enabled keep their legacy events untouched. The first integrity-bearing append to such a stream records a per-stream watermark at `[metadata, integrity, chain_start, StreamId]` set to the version of that first integrity event. Events below the watermark are legacy; events at or above must carry integrity fields. The `skip_legacy` read mode handles the mixed case transparently and emits `[reckon, db, read, legacy_event_returned]` telemetry so operators can monitor remediation progress.
+
+### What this catches
+
+| Attack | Detected at | How |
+|--------|-------------|-----|
+| Per-event field mutation (data, metadata, type, tags, timestamp) | Read time | MAC mismatch |
+| Forging an event under a different key | Read time | MAC mismatch |
+| Mutating a stored MAC | Read time | MAC mismatch |
+| Deleting a middle event | Read time | Chain mismatch on the successor |
+| Inserting a forged event | Read time | MAC mismatch (forged event signed under different key) |
+| Swapping two adjacent events | Read time | Chain or MAC mismatch |
+| Tampering a snapshot's state | Snapshot load | Snapshot MAC mismatch |
+| Tampering a stream event *after* a snapshot | Snapshot load | Snapshot anchor mismatch (the headline property — defeats re-signing attacks) |
+| Subscription delivery of a tampered event | Catch-up | Per-event MAC check, subscriber receives `subscription_error` |
+
+### What this does NOT catch (current limitations)
+
+- **Backward-direction reads** bypass chain verification in 2.1.0. Forward-direction reads are the verified path.
+- **Cross-stream catch-up** does per-event MAC only — no chain walk, since cross-stream reads sort by `epoch_us` and have no single chain.
+- **Operator-level Khepri tampering** can plant any value; the system *detects* this on the next read but does not prevent it. Trust boundaries around the BEAM process (filesystem permissions, dm-verity, FDE, container immutability) remain operationally relevant.
+- **An attacker who controls both the central orchestrator AND code execution at the storage node** has the HMAC key and can produce events that verify. No architectural mitigation suffices at that point; the operator is in incident-response territory regardless.
+- **External authenticity** — clients of the gateway can verify chain continuity but cannot independently authenticate events (the MAC is server-side only). A future Ed25519 signature on the schema (`signature` field) is reserved for this; not populated in 2.1.x.
+
+### Trust boundaries explicitly
+
+Capability tokens (UCAN-flavoured, in `reckon-gater`) and tamper resistance are **independent orthogonal layers**. Capability authorises WHO may invoke the API; integrity authenticates WHAT was written. A capability holder appending via the API produces integrity-bearing events; an actor with direct Khepri write access (bypassing the API) can plant unverifiable values that surface as `integrity_violation` on the next read.
+
+### Key management posture in 2.1.0
+
+Single symmetric HMAC key per store; key ID slot reserved in the `mac` tuple format (`{1, MacBytes}` always in 2.1). Rotation arrives in a follow-up release; the format is forward-compatible.
+
+### Reference design
+
+The full design — threat model, layer-by-layer implementation plan, key management evolution path, deferred-scope list — lives in [`reckon-db/plans/PLAN_TAMPER_RESISTANCE.md`](https://codeberg.org/reckon-db-org/reckon-db/src/branch/main/plans/PLAN_TAMPER_RESISTANCE.md).
 
 ## Cross-Stream Queries
 
