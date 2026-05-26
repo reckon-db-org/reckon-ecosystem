@@ -90,7 +90,7 @@
   <g filter="url(#shadow3)">
     <rect x="500" y="525" width="220" height="50" rx="10" fill="#1e40af"/>
     <text x="610" y="548" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_gateway</text>
-    <text x="610" y="565" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bfdbfe">gRPC ingress + hybrid store &#xb7; v0.6.1</text>
+    <text x="610" y="565" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bfdbfe">gRPC ingress + hybrid store &#xb7; v0.6.2</text>
   </g>
 
   <!-- === DEPENDENCY ARROWS === -->
