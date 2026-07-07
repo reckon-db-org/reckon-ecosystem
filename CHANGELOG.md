@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-07-06
+
+### Tracks the July 2026 wave + adds the wire contract and polyglot client tier
+
+The ecosystem docs were frozen at the 2.1 / 1.15 / 0.2 wave (May 2026) while the
+stack moved several major versions and grew a whole polyglot client family. This
+release resynchronises everything.
+
+**Versions corrected** (README, dependency graph, and every guide header):
+
+- `reckon-db` 2.1.0 → **5.9.0** — adds DCB + CCC conditional consistency and
+  continuous cluster self-healing
+- `reckon-gater` 2.1.0 → **3.10.0** — DCB/CCC `tag_filter` types
+- `evoq` 1.15.0 → **1.23.0** — Decisions (DCB/CCC) via `evoq_decision`
+- `reckon-evoq` 2.1.0 → **2.7.0**
+- `reckon-nifs` 2.0.0 → **2.0.1**
+- `reckon-gateway` 0.2.0 → **0.27.0** — catalogue-mode federation + optional
+  embedded store
+
+**New: wire contract + polyglot clients** (previously undocumented):
+
+- `reckon-proto` **0.8.0** — the gRPC `.proto` contract, single source of truth
+- `reckon-go` **0.9.0**, `reckon-dotnet` **0.1.0**, `reckon-py` **0.1.0** —
+  idiomatic clients generated from the contract
+- `reckon-lazy` **0.4.0** — the `lazyreckon` TUI, built on reckon-go
+
+### Added
+
+- **guides/reckon-proto.md** — the wire contract, service/RPC catalogue,
+  versioning, and how gateway + clients consume it.
+- **guides/polyglot-clients.md** — Go, .NET, Python, and lazyreckon.
+- **guides/dcb-and-ccc.md** — multi-stream consistency (DCB tag-filter boundaries
+  and CCC payload-indexed conditions) across reckon_db, evoq, and the gateway.
+- README **Polyglot Clients** section + a second package table for the contract
+  and client tier.
+
+### Changed
+
+- **assets/dependency-graph.svg** — corrected every version label; added Level 5
+  (reckon_proto wire contract) and Level 6 (polyglot clients), with build-time
+  stub-generation edges and runtime gRPC-connect edges.
+- **README.md** — feature list now covers DCB/CCC and self-healing; per-package
+  capabilities and install snippets updated; loose (`~> X.Y`) constraints.
+- **guides/reckon-gateway.md** — service table corrected: removed the
+  non-existent `CausationService`, added `DcbService` and `StoresService`,
+  documented catalogue vs embedded modes.
+- **guides/architecture.md** — status note moved from the 2.1 wave to the current
+  wave; DCB/CCC + self-healing referenced.
+- **reckon-db / reckon-gater / evoq / reckon-evoq / reckon-nifs / getting-started**
+  guides — version headers and dependency snippets updated to the current wave.
+
 ## [0.3.0] - 2026-05-15
 
 ### Tracks the 2.1 / 1.15 / 0.2 release wave

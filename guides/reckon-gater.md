@@ -4,14 +4,14 @@
 
 reckon_gater is the shared foundation of the Reckon ecosystem. It defines the canonical record types, store interface, and gateway capabilities that all other packages depend on. Think of it as the API contract — reckon_db implements it, reckon_evoq consumes it, and your application code uses the types.
 
-**Version:** 2.1.0 | **License:** Apache 2.0
+**Version:** 3.10.0 | **License:** Apache 2.0
 
 - [Codeberg](https://codeberg.org/reckon-db-org/reckon-gater) | [HexDocs](https://hexdocs.pm/reckon_gater)
 
 ## Installation
 
 ```erlang
-{deps, [{reckon_gater, "2.1.0"}]}.
+{deps, [{reckon_gater, "~> 3.10"}]}.
 ```
 
 > **Naming note:** All modules and header files were renamed from the historical `esdb_*` prefix to layer-qualified `reckon_gater_*` in 2.0.0. If you are upgrading from 1.x, see the [reckon-gater CHANGELOG](https://codeberg.org/reckon-db-org/reckon-gater/src/branch/main/CHANGELOG.md) for the full module mapping.

@@ -4,7 +4,7 @@
 
 reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's event store. It translates between evoq's dispatch/subscribe API and reckon_gater's store interface, enabling seamless event persistence and delivery.
 
-**Version:** 2.1.0 | **License:** Apache 2.0
+**Version:** 2.7.0 | **License:** Apache 2.0
 
 - [Codeberg](https://codeberg.org/reckon-db-org/reckon-evoq) | [HexDocs](https://hexdocs.pm/reckon_evoq)
 
@@ -13,8 +13,8 @@ reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's ev
 ```erlang
 %% rebar.config
 {deps, [
-    {reckon_db, "2.1.0"},       %% Event store
-    {reckon_evoq, "2.1.0"}      %% Adapter (brings evoq as transitive dep)
+    {reckon_db, "~> 5.9"},      %% Event store
+    {reckon_evoq, "~> 2.7"}     %% Adapter (brings evoq as transitive dep)
 ]}.
 ```
 

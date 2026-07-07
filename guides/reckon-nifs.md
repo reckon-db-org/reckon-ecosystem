@@ -4,7 +4,7 @@
 
 reckon_nifs provides optional Rust NIFs (Native Implemented Functions) that accelerate performance-critical operations in the Reckon stack. As of 2.0.0 the NIFs are organised into **seven layer-qualified crates** that target either `reckon-db` (server-side) or `reckon-gater` (client / gateway-side). When loaded, the consuming modules detect them via `persistent_term` and switch from the pure-Erlang fallback to the NIF path.
 
-**Version:** 2.0.0 | **License:** Apache 2.0
+**Version:** 2.0.1 | **License:** Apache 2.0
 
 - [Codeberg](https://codeberg.org/reckon-db-org/reckon-nifs)
 

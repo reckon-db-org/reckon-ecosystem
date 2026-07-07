@@ -2,13 +2,13 @@
 
 ## Overview
 
-reckon_gateway is a gRPC server that wraps the full ReckonDB API. It lets polyglot clients — Go, .NET, Rust, Python, anything that speaks gRPC — use ReckonDB as their event store without running on the BEAM. Internally it consumes `reckon-db` and `reckon-gater`, so it shares the exact same semantics as a native BEAM client.
+reckon_gateway is a gRPC server that wraps the full ReckonDB API. It lets polyglot clients — Go, .NET, Python, anything that speaks gRPC — use ReckonDB as their event store without running on the BEAM. It serves the [reckon_proto](reckon-proto.md) contract and runs in two modes: **catalogue mode** (the default), which federates one or many remote reckon_db clusters over Erlang distribution and hosts no stores itself; and **embedded mode** (`RECKON_GATEWAY_STORE_ENABLED=true`), which boots a local store. Either way it shares the exact same semantics as a native BEAM client.
 
-**Version:** 0.2.0 | **License:** Apache 2.0
+**Version:** 0.27.0 | **License:** Apache 2.0
 
 - [Codeberg](https://codeberg.org/reckon-db-org/reckon-gateway)
 
-> **Status:** 0.2.0. The proto contracts are stabilising; expect minor breaks until 1.0.0. 0.2.0 adds the tamper-resistance wire format (`RecordedEvent.prev_event_hash`, `SnapshotRecord.anchor_hash`) and the `GetServerInfo` RPC on `HealthService` — see the architecture guide's *On-Disk Format and Tamper Resistance* section.
+> **Status:** 0.27.0. The proto contract lives in [reckon_proto](reckon-proto.md) (SemVer at the wire level); expect minor breaks until 1.0.0. The gateway exposes DCB conditional appends and CCC payload-indexed reads (`DcbService`), tamper-resistance on the wire (`RecordedEvent.prev_event_hash` — the `mac` is never transmitted), and cluster self-healing diagnostics on `HealthService`. Requires store BEAMs on **reckon-db ~> 5.7** + **reckon-gater ~> 3.10**.
 
 ## Quick Start
 
@@ -33,14 +33,17 @@ rebar3 shell        # Listens on :50051 by default
 
 | Service | Proto File | Purpose |
 |---------|-----------|---------|
-| **StreamService** | `reckon_streams.proto` | Append, read, list, delete event streams |
+| **StreamService** | `reckon_streams.proto` | Append, read (forward/backward/streaming), list, delete; read by event type / tags / metadata / global |
 | **SubscriptionService** | `reckon_subscriptions.proto` | Persistent subscriptions with server-streaming delivery |
 | **SnapshotService** | `reckon_snapshots.proto` | Save / load aggregate state snapshots |
-| **TemporalService** | `reckon_temporal.proto` | Time-based event queries |
-| **CausationService** | `reckon_causation.proto` | Event lineage / correlation tracking |
+| **DcbService** | `reckon_dcb.proto` | DCB conditional appends + CCC payload-indexed reads (`CccReadByPayload`, `CccReadByPayloadHash`) |
+| **TemporalService** | `reckon_temporal.proto` | Time-based / time-travel reads (`ReadUntil`, `ReadRange`, `VersionAt`) |
 | **SchemaService** | `reckon_schema.proto` | Event schema registration and upcasting |
-| **AdminService** | `reckon_admin.proto` | Store inspection, scavenging, stream links |
-| **HealthService** | `reckon_health.proto` | Health checks, cluster diagnostics, memory pressure |
+| **AdminService** | `reckon_admin.proto` | Store inspection, scavenging, projection/stream links, catalogue reload |
+| **StoresService** | `reckon_stores.proto` | Cluster topology discovery + watch |
+| **HealthService** | `reckon_health.proto` | Health checks, cluster consistency / membership consensus / Raft log verification, memory pressure, server info |
+
+> The full contract (message shapes, every RPC) lives in [reckon_proto](reckon-proto.md). There is no `CausationService` — event lineage is an application concern, not a gateway service.
 
 ## Example: Go Client
 

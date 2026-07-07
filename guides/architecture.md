@@ -235,7 +235,7 @@ Old events are never modified. New versions add fields. This preserves the immut
 
 ## On-Disk Format and Tamper Resistance
 
-> **Status as of the 2.1 wave** (`reckon-gater` 2.1.0, `reckon-db` 2.1.0, `evoq` 1.15.0, `reckon-evoq` 2.1.0, `reckon-gateway` 0.2.0): tamper-evident events and snapshots are now available as an opt-in per-store feature. Stores configured with `integrity` enabled write HMAC-protected, chain-hashed events and verify them on every read surface.
+> **Current wave** (`reckon-gater` 3.10.0, `reckon-db` 5.9.0, `evoq` 1.23.0, `reckon-evoq` 2.7.0, `reckon-gateway` 0.27.0; wire contract `reckon-proto` 0.8.0): tamper-evident events and snapshots are available as an opt-in per-store feature — stores configured with `integrity` enabled write HMAC-protected, chain-hashed events and verify them on every read surface. Since the 2.1 wave the stack also added multi-stream consistency ([DCB &amp; CCC](dcb-and-ccc.md)) and continuous cluster self-healing in reckon_db.
 
 The on-disk event store is built on Khepri (tree-structured storage) and Ra (Raft consensus). Both layers protect against **corruption** via WAL CRCs — but CRCs do not protect against **intentional tampering**, since an attacker can recompute them trivially. The 2.1 wave addresses the gap above the storage primitive.
 

@@ -4,14 +4,16 @@
 
 evoq is a pure, backend-agnostic CQRS and Event Sourcing framework for Erlang/OTP. It provides behaviours for aggregates, projections, process managers, and more — without any opinion about how events are stored. This separation means your domain code is testable, portable, and decoupled from infrastructure.
 
-**Version:** 1.15.0 | **License:** Apache 2.0
+**Version:** 1.23.0 | **License:** Apache 2.0
+
+> **Since the 2.1 wave:** evoq gained **Decisions (DCB/CCC)** — the `evoq_decision` behaviour for cross-cutting consistency boundaries (uniqueness, allocation, rate limits) that lock on the *absence* of events matching a tag-filter, with optional payload-scoped conditions (CCC). See [DCB &amp; CCC](dcb-and-ccc.md).
 
 - [Codeberg](https://codeberg.org/reckon-db-org/evoq) | [HexDocs](https://hexdocs.pm/evoq)
 
 ## Installation
 
 ```erlang
-{deps, [{evoq, "1.15.0"}]}.
+{deps, [{evoq, "~> 1.23"}]}.
 ```
 
 Note: evoq is typically pulled in as a transitive dependency of reckon_evoq.
