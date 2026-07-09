@@ -162,20 +162,22 @@ Scripted, repeatable, watched live on the dashboard (full runbook:
 
 | Claim | Figure | Source |
 |---|---|---|
-| Events per charging session (density) | **~8** (4 SoC milestones + request/start/complete/settle), vs **1** `battery_charged` before | `charging-*` streams: 48 `charging_progressed` / 12 `charging_completed` = 4.0 milestones/session |
+| Events per charging session (density) | **~8** (4 SoC milestones + request/start/complete/settle), vs **1** `battery_charged` before | `charging-*` streams: `charging_progressed` / `charging_completed` = 4.0 milestones/session |
 | Sovereign stores · weakest `can_lose` | **4 independent Raft clusters · can_lose 1** (all quorate) | `/v1/stores/parksim_<t>_store/cluster` |
 | Price signal reaches each region | **yes** — region-specific tariffs stamped on sessions (leuven 36, brussels/ghent 41, antwerp 40 c/kWh) | `energy_settled.tariff_cents_per_kwh` |
+| **Price signal shapes charging (defer)** | at **peak (36 c/kWh)**, 29/29 charges started at **22.6% avg SoC** — the critical floor — vs the **32%** normal trigger. The fleet defers the 32%→22% band at peak and only charges vehicles that would otherwise strand. No central scheduler. | `energy_settled.energy_kwh` → start SoC, vs `fleet_config.return_threshold_pct` |
 | Tamper-evidence | every event hash-chained (`prev_event_hash`) | raw event |
-| Off-peak share of energy, price-aware ON | **needs a full sim-day** — first 48 sessions all fell in one (peak) clock band, so 0% is not yet representative | `energy_settled.off_peak` |
+| Off-peak share of energy, price-aware ON | pending: at the deployed `time_scale` 3 the sim-day is ~8 real hours, so the off-peak window is hours out; capture on a dedicated higher-scale run | `energy_settled.off_peak` |
 | Off-peak share, price signal ignored (control) | TBD (control run, defer disabled) | same |
 | Partition autonomy: writes committed while cut off | TBD | Scenario 1 |
 
-No fake numbers. The density, sovereignty, price-propagation and tamper-evidence
-figures are measured on the live fleet. The off-peak *share* — the headline of
-the emergent-coordination claim — is still collecting: it only becomes
-meaningful once the simulated day rotates through off-peak windows, and the ON
-vs OFF control comparison is a deliberate second run. The qualitative and
-structural claims above hold today.
+No fake numbers. Density, sovereignty, price-propagation, the defer behaviour,
+and tamper-evidence are measured on the live fleet. The **defer figure is the
+core of the emergent-coordination claim already**: with no central controller,
+an expensive grid price makes every edge hold back non-critical charging (32% →
+22% floor). The off-peak *share* is the complementary headline; at `time_scale`
+3 (sim-day ≈ 8 real hours) it needs a dedicated run through an off-peak window,
+plus the defer-OFF control arm for the delta. Those two ship the post.
 
 ---
 
