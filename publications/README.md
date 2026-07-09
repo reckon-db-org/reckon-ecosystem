@@ -24,6 +24,7 @@ publications/
 | Draft | Topic | Gate |
 |---|---|---|
 | [POST_DRAFT_reckon_vs_eventstoredb.md](POST_DRAFT_reckon_vs_eventstoredb.md) | Reckon vs EventStoreDB on hetzner-cx32 | Needs tuned CX32 numbers; noise floor measured |
+| [POST_DRAFT_decentralized_vs_centralized.md](POST_DRAFT_decentralized_vs_centralized.md) | Why throughput is the wrong yardstick for a decentralized store; parksim as existence proof | Needs live figures from a deployed parksim run (scorecard + off-peak on/off control) |
 
 ## Published
 
