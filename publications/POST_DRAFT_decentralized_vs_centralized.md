@@ -158,20 +158,24 @@ Scripted, repeatable, watched live on the dashboard (full runbook:
 - **Self-heal.** Kill a node; the store returns to full strength unattended
   (5.11 native rejoin), no operator runbook.
 
-### Live figures (filled from a deployed run — see gate)
+### Live figures (from the deployed fleet, 2026-07-09)
 
 | Claim | Figure | Source |
 |---|---|---|
-| Events per charging session (density) | TBD | event log, `charging-*` streams |
-| Off-peak share of energy, price-aware on | TBD % | `energy/<op>/summary` |
-| Off-peak share, price signal ignored (control) | TBD % | same, defer disabled |
-| Fleet event rate (the "weak" number, stated plainly) | TBD ev/s | scorecard |
-| Edge footprint: event data on disk, whole fleet | TBD GB | scorecard |
-| Weakest `can_lose` across the fleet | TBD | scorecard |
+| Events per charging session (density) | **~8** (4 SoC milestones + request/start/complete/settle), vs **1** `battery_charged` before | `charging-*` streams: 48 `charging_progressed` / 12 `charging_completed` = 4.0 milestones/session |
+| Sovereign stores · weakest `can_lose` | **4 independent Raft clusters · can_lose 1** (all quorate) | `/v1/stores/parksim_<t>_store/cluster` |
+| Price signal reaches each region | **yes** — region-specific tariffs stamped on sessions (leuven 36, brussels/ghent 41, antwerp 40 c/kWh) | `energy_settled.tariff_cents_per_kwh` |
+| Tamper-evidence | every event hash-chained (`prev_event_hash`) | raw event |
+| Off-peak share of energy, price-aware ON | **needs a full sim-day** — first 48 sessions all fell in one (peak) clock band, so 0% is not yet representative | `energy_settled.off_peak` |
+| Off-peak share, price signal ignored (control) | TBD (control run, defer disabled) | same |
 | Partition autonomy: writes committed while cut off | TBD | Scenario 1 |
 
-No fake numbers: these ship empty until measured on a deployed fleet. The
-qualitative and structural claims above hold today.
+No fake numbers. The density, sovereignty, price-propagation and tamper-evidence
+figures are measured on the live fleet. The off-peak *share* — the headline of
+the emergent-coordination claim — is still collecting: it only becomes
+meaningful once the simulated day rotates through off-peak windows, and the ON
+vs OFF control comparison is a deliberate second run. The qualitative and
+structural claims above hold today.
 
 ---
 
