@@ -12,7 +12,7 @@
   <p><em>Seven Erlang/OTP packages that give your applications an immutable, distributed, self-healing event store with a pure CQRS framework — plus a stable gRPC contract and idiomatic clients for Go, .NET, and Python.</em></p>
 
   [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-  [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg)](https://buymeacoffee.com/rlefever)
+  [![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-support-ea4aaa.svg?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/rgfaber)
 </div>
 
 ---
