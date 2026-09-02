@@ -6,7 +6,7 @@ reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's ev
 
 **Version:** 2.7.0 | **License:** Apache 2.0
 
-- [Codeberg](https://codeberg.org/reckon-db-org/reckon-evoq) | [HexDocs](https://hexdocs.pm/reckon_evoq)
+- [GitHub](https://github.com/reckon-db-org/reckon-evoq) | [HexDocs](https://hexdocs.pm/reckon_evoq)
 
 ## Installation
 

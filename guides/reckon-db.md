@@ -8,7 +8,7 @@ reckon_db is a distributed event store built entirely in Erlang/OTP. It uses [Kh
 
 > **Since the 2.1 wave:** reckon_db now provides multi-stream consistency — Dynamic Consistency Boundary (DCB) conditional appends and Command Context Consistency (CCC) payload-indexed conditions (see [DCB &amp; CCC](dcb-and-ccc.md)) — and **continuous cluster self-healing** (a per-store healer that rejoins a drifted/split replica to quorum, with a wedge-proof coordinator and drift/heal telemetry).
 
-- [Codeberg](https://codeberg.org/reckon-db-org/reckon-db) | [HexDocs](https://hexdocs.pm/reckon_db)
+- [GitHub](https://github.com/reckon-db-org/reckon-db) | [HexDocs](https://hexdocs.pm/reckon_db)
 
 ## Installation
 

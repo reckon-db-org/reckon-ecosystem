@@ -55,22 +55,22 @@ Commands enter through evoq aggregates, produce domain events, which are persist
 
 | Package | Version | Description | Links |
 |---------|---------|-------------|-------|
-| **reckon_db** | 5.9.0 | BEAM-native distributed event store on Khepri/Ra; DCB + CCC conditional appends, **continuous cluster self-healing**, tamper-evident events + snapshots | [Codeberg](https://codeberg.org/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
-| **reckon_gater** | 3.10.0 | Event store gateway, shared types + protocols (event, snapshot, subscription, DCB/CCC `tag_filter`), tamper-resistance primitives | [Codeberg](https://codeberg.org/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
-| **evoq** | 1.23.0 | Pure CQRS/ES framework; aggregates, projections, process managers, middleware pipeline, and **Decisions (DCB/CCC)** | [Codeberg](https://codeberg.org/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
-| **reckon_nifs** | 2.0.1 | Rust NIFs for high-performance operations (optional), as layer-qualified crates | [Codeberg](https://codeberg.org/reckon-db-org/reckon-nifs) |
-| **reckon_evoq** | 2.7.0 | Adapter bridging evoq to reckon_db; propagates chain hash to projections | [Codeberg](https://codeberg.org/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
-| **reckon_gateway** | 0.27.0 | gRPC ingress exposing ReckonDB to polyglot clients; catalogue-mode federation over remote clusters + optional embedded store | [Codeberg](https://codeberg.org/reckon-db-org/reckon-gateway) |
+| **reckon_db** | 5.9.0 | BEAM-native distributed event store on Khepri/Ra; DCB + CCC conditional appends, **continuous cluster self-healing**, tamper-evident events + snapshots | [GitHub](https://github.com/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
+| **reckon_gater** | 3.10.0 | Event store gateway, shared types + protocols (event, snapshot, subscription, DCB/CCC `tag_filter`), tamper-resistance primitives | [GitHub](https://github.com/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
+| **evoq** | 1.23.0 | Pure CQRS/ES framework; aggregates, projections, process managers, middleware pipeline, and **Decisions (DCB/CCC)** | [GitHub](https://github.com/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
+| **reckon_nifs** | 2.0.1 | Rust NIFs for high-performance operations (optional), as layer-qualified crates | [GitHub](https://github.com/reckon-db-org/reckon-nifs) |
+| **reckon_evoq** | 2.7.0 | Adapter bridging evoq to reckon_db; propagates chain hash to projections | [GitHub](https://github.com/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
+| **reckon_gateway** | 0.27.0 | gRPC ingress exposing ReckonDB to polyglot clients; catalogue-mode federation over remote clusters + optional embedded store | [GitHub](https://github.com/reckon-db-org/reckon-gateway) |
 
 ### Wire contract + polyglot clients
 
 | Package | Version | Description | Links |
 |---------|---------|-------------|-------|
-| **reckon_proto** | 0.8.0 | The gRPC `.proto` wire contract (SemVer at the wire level). Single source of truth for every client and the gateway | [Codeberg](https://codeberg.org/reckon-db-org/reckon-proto) |
-| **reckon-go** | 0.9.0 | Idiomatic Go client over the full gateway surface | [Codeberg](https://codeberg.org/reckon-db-org/reckon-go) |
-| **reckon-dotnet** | 0.1.0 | Idiomatic .NET client | [Codeberg](https://codeberg.org/reckon-db-org/reckon-dotnet) |
-| **reckon-py** | 0.1.0 | Python client | [Codeberg](https://codeberg.org/reckon-db-org/reckon-py) |
-| **reckon-lazy** | 0.4.0 | `lazyreckon` — a terminal UI for browsing stores/streams/events, built on reckon-go | [Codeberg](https://codeberg.org/reckon-db-org/reckon-lazy) |
+| **reckon_proto** | 0.8.0 | The gRPC `.proto` wire contract (SemVer at the wire level). Single source of truth for every client and the gateway | [GitHub](https://github.com/reckon-db-org/reckon-proto) |
+| **reckon-go** | 0.9.0 | Idiomatic Go client over the full gateway surface | [GitHub](https://github.com/reckon-db-org/reckon-go) |
+| **reckon-dotnet** | 0.1.0 | Idiomatic .NET client | [GitHub](https://github.com/reckon-db-org/reckon-dotnet) |
+| **reckon-py** | 0.1.0 | Python client | [GitHub](https://github.com/reckon-db-org/reckon-py) |
+| **reckon-lazy** | 0.4.0 | `lazyreckon` — a terminal UI for browsing stores/streams/events, built on reckon-go | [GitHub](https://github.com/reckon-db-org/reckon-lazy) |
 
 ---
 
@@ -152,7 +152,7 @@ Optional Rust NIFs providing native-speed implementations of performance-critica
 - **`reckon_gater_crypto_nif`** — Base58 encode / decode, UCAN resource pattern matching
 
 ```erlang
-{deps, [{reckon_nifs, {git, "https://codeberg.org/reckon-db-org/reckon-nifs.git", {branch, "main"}}}]}.
+{deps, [{reckon_nifs, {git, "https://github.com/reckon-db-org/reckon-nifs.git", {branch, "main"}}}]}.
 ```
 
 > See [reckon_nifs Guide](guides/reckon-nifs.md)
@@ -207,10 +207,10 @@ docker run -p 50051:50051 -v reckon-data:/app/data reckon-gateway
 Every client generates its stubs from the **reckon_proto** contract at build time and connects to a running gateway over gRPC at runtime. The contract is versioned with SemVer at the wire level, so a client and gateway on the same minor line interoperate.
 
 - **[reckon_proto](guides/reckon-proto.md)** — the `.proto` files. Consumed by the gateway (server stubs) and every client (client stubs; reckon-py vendors the protos, reckon-dotnet pins them as a git submodule).
-- **[reckon-go](https://codeberg.org/reckon-db-org/reckon-go)** — `reckon.Connect(ctx, "gateway:50051")`; per-service sub-clients (`Stores`, `Streams`, `Subscriptions`, `Snapshots`, `Dcb`, `Schema`, `Temporal`, `Admin`, `Health`).
-- **[reckon-dotnet](https://codeberg.org/reckon-db-org/reckon-dotnet)** — `await ReckonClient.ConnectAsync("gateway:50051")`.
-- **[reckon-py](https://codeberg.org/reckon-db-org/reckon-py)** — Python client for scripting and data workflows.
-- **[reckon-lazy](https://codeberg.org/reckon-db-org/reckon-lazy)** — `lazyreckon`, a terminal UI for browsing stores/streams/events, built on reckon-go.
+- **[reckon-go](https://github.com/reckon-db-org/reckon-go)** — `reckon.Connect(ctx, "gateway:50051")`; per-service sub-clients (`Stores`, `Streams`, `Subscriptions`, `Snapshots`, `Dcb`, `Schema`, `Temporal`, `Admin`, `Health`).
+- **[reckon-dotnet](https://github.com/reckon-db-org/reckon-dotnet)** — `await ReckonClient.ConnectAsync("gateway:50051")`.
+- **[reckon-py](https://github.com/reckon-db-org/reckon-py)** — Python client for scripting and data workflows.
+- **[reckon-lazy](https://github.com/reckon-db-org/reckon-lazy)** — `lazyreckon`, a terminal UI for browsing stores/streams/events, built on reckon-go.
 
 > See [Polyglot Clients](guides/polyglot-clients.md) and [DCB &amp; CCC](guides/dcb-and-ccc.md).
 
@@ -308,14 +308,14 @@ Built on Ra (RabbitMQ's queue-replication library) and Khepri (RabbitMQ's next-g
 
 ## Who Uses Reckon?
 
-- [**Hecate**](https://codeberg.org/hecate-social/hecate-ecosystem) — AI-powered developer studio for Macula mesh applications
-- [**Macula**](https://codeberg.org/macula-io/macula-ecosystem) — Distributed application platform with HTTP/3 mesh networking
+- [**Hecate**](https://github.com/hecate-social/hecate-ecosystem) — AI-powered developer studio for Macula mesh applications
+- [**Macula**](https://github.com/macula-io/macula-ecosystem) — Distributed application platform with HTTP/3 mesh networking
 
 ---
 
 ## Community
 
-- **Codeberg**: [reckon-db-org](https://codeberg.org/reckon-db-org) (canonical)
+- **GitHub**: [reckon-db-org](https://github.com/reckon-db-org) (canonical)
 - **GitHub mirror**: [reckon-db-org](https://github.com/reckon-db-org) (read-only)
 - **Hex.pm**: [reckon_db](https://hex.pm/packages/reckon_db) | [evoq](https://hex.pm/packages/evoq) | [reckon_gater](https://hex.pm/packages/reckon_gater) | [reckon_evoq](https://hex.pm/packages/reckon_evoq)
 

@@ -8,12 +8,12 @@ Every client follows the same shape: **one connection to one gateway endpoint**,
 
 ## reckon-go
 
-**Version:** 0.9.0 — [Codeberg](https://codeberg.org/reckon-db-org/reckon-go)
+**Version:** 0.9.0 — [GitHub](https://github.com/reckon-db-org/reckon-go)
 
 The import path ends in `reckon-go`; the Go package is `reckon`.
 
 ```go
-import reckon "codeberg.org/reckon-db-org/reckon-go"
+import reckon "github.com/reckon-db-org/reckon-go"
 
 c, err := reckon.Connect(ctx, "gateway.example.org:50051") // TLS, system roots (the default)
 if err != nil { /* ... */ }
@@ -40,7 +40,7 @@ One `reckon.Client` wraps one gRPC connection. Per-service sub-clients share it:
 
 ## reckon-dotnet
 
-**Version:** 0.1.0 — [Codeberg](https://codeberg.org/reckon-db-org/reckon-dotnet)
+**Version:** 0.1.0 — [GitHub](https://github.com/reckon-db-org/reckon-dotnet)
 
 Idiomatic async .NET client. Pins `reckon_proto` as a git submodule and generates C# from it.
 
@@ -52,7 +52,7 @@ Console.WriteLine($"node={overview.Node} status={overview.Status}");
 
 ## reckon-py
 
-**Version:** 0.1.0 — [Codeberg](https://codeberg.org/reckon-db-org/reckon-py)
+**Version:** 0.1.0 — [GitHub](https://github.com/reckon-db-org/reckon-py)
 
 Python client for scripting, data workflows, and integration. Vendors the `.proto` files and generates Python stubs.
 
@@ -62,7 +62,7 @@ pip install reckon  # from the repo's packaging; see the README
 
 ## reckon-lazy (lazyreckon)
 
-**Version:** 0.4.0 — [Codeberg](https://codeberg.org/reckon-db-org/reckon-lazy)
+**Version:** 0.4.0 — [GitHub](https://github.com/reckon-db-org/reckon-lazy)
 
 `lazyreckon` is a terminal UI for operators and developers: browse stores, drill into streams, and inspect events without writing code. It is built on **reckon-go**, so it connects to the same gateway the same way.
 

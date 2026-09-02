@@ -6,7 +6,7 @@ reckon_nifs provides optional Rust NIFs (Native Implemented Functions) that acce
 
 **Version:** 2.0.1 | **License:** Apache 2.0
 
-- [Codeberg](https://codeberg.org/reckon-db-org/reckon-nifs)
+- [GitHub](https://github.com/reckon-db-org/reckon-nifs)
 
 ## Installation
 
@@ -15,7 +15,7 @@ reckon_nifs is distributed via Git because it requires a Rust toolchain to compi
 ```erlang
 %% rebar.config
 {deps, [
-    {reckon_nifs, {git, "https://codeberg.org/reckon-db-org/reckon-nifs.git", {branch, "main"}}}
+    {reckon_nifs, {git, "https://github.com/reckon-db-org/reckon-nifs.git", {branch, "main"}}}
 ]}.
 ```
 
@@ -93,7 +93,7 @@ Although the `reckon_db_crypto_nif` crate exposes Ed25519 verification and SHA-2
 ## Building from Source
 
 ```bash
-git clone https://codeberg.org/reckon-db-org/reckon-nifs.git
+git clone https://github.com/reckon-db-org/reckon-nifs.git
 cd reckon-nifs
 rebar3 compile   # Compiles Erlang + triggers rustler Rust build for each crate
 rebar3 eunit

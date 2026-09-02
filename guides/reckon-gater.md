@@ -6,7 +6,7 @@ reckon_gater is the shared foundation of the Reckon ecosystem. It defines the ca
 
 **Version:** 3.10.0 | **License:** Apache 2.0
 
-- [Codeberg](https://codeberg.org/reckon-db-org/reckon-gater) | [HexDocs](https://hexdocs.pm/reckon_gater)
+- [GitHub](https://github.com/reckon-db-org/reckon-gater) | [HexDocs](https://hexdocs.pm/reckon_gater)
 
 ## Installation
 
@@ -14,7 +14,7 @@ reckon_gater is the shared foundation of the Reckon ecosystem. It defines the ca
 {deps, [{reckon_gater, "~> 3.10"}]}.
 ```
 
-> **Naming note:** All modules and header files were renamed from the historical `esdb_*` prefix to layer-qualified `reckon_gater_*` in 2.0.0. If you are upgrading from 1.x, see the [reckon-gater CHANGELOG](https://codeberg.org/reckon-db-org/reckon-gater/src/branch/main/CHANGELOG.md) for the full module mapping.
+> **Naming note:** All modules and header files were renamed from the historical `esdb_*` prefix to layer-qualified `reckon_gater_*` in 2.0.0. If you are upgrading from 1.x, see the [reckon-gater CHANGELOG](https://github.com/reckon-db-org/reckon-gater/blob/main/CHANGELOG.md) for the full module mapping.
 
 Note: You typically don't add reckon_gater directly — it comes as a transitive dependency of reckon_db and reckon_evoq.
 

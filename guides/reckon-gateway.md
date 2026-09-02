@@ -6,7 +6,7 @@ reckon_gateway is a gRPC server that wraps the full ReckonDB API. It lets polygl
 
 **Version:** 0.27.0 | **License:** Apache 2.0
 
-- [Codeberg](https://codeberg.org/reckon-db-org/reckon-gateway)
+- [GitHub](https://github.com/reckon-db-org/reckon-gateway)
 
 > **Status:** 0.27.0. The proto contract lives in [reckon_proto](reckon-proto.md) (SemVer at the wire level); expect minor breaks until 1.0.0. The gateway exposes DCB conditional appends and CCC payload-indexed reads (`DcbService`), tamper-resistance on the wire (`RecordedEvent.prev_event_hash` — the `mac` is never transmitted), and cluster self-healing diagnostics on `HealthService`. Requires store BEAMs on **reckon-db ~> 5.7** + **reckon-gater ~> 3.10**.
 
@@ -22,7 +22,7 @@ docker run -p 50051:50051 -v reckon-data:/app/data reckon-gateway
 ### From Source
 
 ```bash
-git clone https://codeberg.org/reckon-db-org/reckon-gateway.git
+git clone https://github.com/reckon-db-org/reckon-gateway.git
 cd reckon-gateway
 rebar3 grpc gen     # Generate gRPC stubs from .proto files
 rebar3 compile

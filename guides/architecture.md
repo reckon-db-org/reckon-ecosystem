@@ -323,7 +323,7 @@ Single symmetric HMAC key per store; key ID slot reserved in the `mac` tuple for
 
 ### Reference design
 
-The full design — threat model, layer-by-layer implementation plan, key management evolution path, deferred-scope list — lives in [`reckon-db/plans/PLAN_TAMPER_RESISTANCE.md`](https://codeberg.org/reckon-db-org/reckon-db/src/branch/main/plans/PLAN_TAMPER_RESISTANCE.md).
+The full design — threat model, layer-by-layer implementation plan, key management evolution path, deferred-scope list — lives in [`reckon-db/plans/PLAN_TAMPER_RESISTANCE.md`](https://github.com/reckon-db-org/reckon-db/blob/main/plans/PLAN_TAMPER_RESISTANCE.md).
 
 ## Cross-Stream Queries
 

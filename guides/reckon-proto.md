@@ -6,7 +6,7 @@ reckon_proto is the **single source of truth** for how the outside world talks t
 
 **Version:** 0.8.0 | **License:** Apache 2.0
 
-- [Codeberg](https://codeberg.org/reckon-db-org/reckon-proto)
+- [GitHub](https://github.com/reckon-db-org/reckon-proto)
 
 > **Versioning:** SemVer at the **wire-contract level**. A client and a gateway on the same minor line interoperate. Breaking wire changes bump the minor while the contract is pre-1.0; expect stabilisation toward 1.0.0.
 
@@ -41,7 +41,7 @@ reckon_proto is a [buf](https://buf.build/) module (`buf.yaml`, `buf.gen.yaml`) 
 
 ```erlang
 %% reckon_gateway consumes the generated Erlang server stubs
-{reckon_proto, {git, "https://codeberg.org/reckon-db-org/reckon-proto.git", {tag, "v0.8.0"}}}.
+{reckon_proto, {git, "https://github.com/reckon-db-org/reckon-proto.git", {tag, "v0.8.0"}}}.
 ```
 
 Clients pin the contract per their ecosystem:

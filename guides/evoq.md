@@ -8,7 +8,7 @@ evoq is a pure, backend-agnostic CQRS and Event Sourcing framework for Erlang/OT
 
 > **Since the 2.1 wave:** evoq gained **Decisions (DCB/CCC)** — the `evoq_decision` behaviour for cross-cutting consistency boundaries (uniqueness, allocation, rate limits) that lock on the *absence* of events matching a tag-filter, with optional payload-scoped conditions (CCC). See [DCB &amp; CCC](dcb-and-ccc.md).
 
-- [Codeberg](https://codeberg.org/reckon-db-org/evoq) | [HexDocs](https://hexdocs.pm/evoq)
+- [GitHub](https://github.com/reckon-db-org/evoq) | [HexDocs](https://hexdocs.pm/evoq)
 
 ## Installation
 
