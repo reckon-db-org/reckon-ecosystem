@@ -55,9 +55,9 @@ Commands enter through evoq aggregates, produce domain events, which are persist
 
 | Package | Version | Description | Links |
 |---------|---------|-------------|-------|
-| **reckon_db** | 5.9.0 | BEAM-native distributed event store on Khepri/Ra; DCB + CCC conditional appends, **continuous cluster self-healing**, tamper-evident events + snapshots | [GitHub](https://github.com/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
-| **reckon_gater** | 3.10.0 | Event store gateway, shared types + protocols (event, snapshot, subscription, DCB/CCC `tag_filter`), tamper-resistance primitives | [GitHub](https://github.com/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
-| **evoq** | 1.23.0 | Pure CQRS/ES framework; aggregates, projections, process managers, middleware pipeline, and **Decisions (DCB/CCC)** | [GitHub](https://github.com/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
+| **reckon_db** | 5.11.5 | BEAM-native distributed event store on Khepri/Ra; DCB + CCC conditional appends, **continuous cluster self-healing**, tamper-evident events + snapshots | [GitHub](https://github.com/reckon-db-org/reckon-db) \| [HexDocs](https://hexdocs.pm/reckon_db) |
+| **reckon_gater** | 3.11.2 | Event store gateway, shared types + protocols (event, snapshot, subscription, DCB/CCC `tag_filter`), tamper-resistance primitives | [GitHub](https://github.com/reckon-db-org/reckon-gater) \| [HexDocs](https://hexdocs.pm/reckon_gater) |
+| **evoq** | 1.23.3 | Pure CQRS/ES framework; aggregates, projections, process managers, middleware pipeline, and **Decisions (DCB/CCC)** | [GitHub](https://github.com/reckon-db-org/evoq) \| [HexDocs](https://hexdocs.pm/evoq) |
 | **reckon_nifs** | 2.0.1 | Rust NIFs for high-performance operations (optional), as layer-qualified crates | [GitHub](https://github.com/reckon-db-org/reckon-nifs) |
 | **reckon_evoq** | 2.7.0 | Adapter bridging evoq to reckon_db; propagates chain hash to projections | [GitHub](https://github.com/reckon-db-org/reckon-evoq) \| [HexDocs](https://hexdocs.pm/reckon_evoq) |
 | **reckon_gateway** | 0.27.0 | gRPC ingress exposing ReckonDB to polyglot clients; catalogue-mode federation over remote clusters + optional embedded store | [GitHub](https://github.com/reckon-db-org/reckon-gateway) |

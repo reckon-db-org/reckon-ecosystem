@@ -80,7 +80,7 @@ tamper-resistance work shipped across five packages:
   canonical encoding, verify-at-read enforcement across all
   surfaces, `chain_start_version` migration story, an attack/detection
   matrix, and an explicit limitations list. Points at
-  [`reckon-db/plans/PLAN_TAMPER_RESISTANCE.md`](https://codeberg.org/reckon-db-org/reckon-db/src/branch/main/plans/PLAN_TAMPER_RESISTANCE.md)
+  [`reckon-db/plans/PLAN_TAMPER_RESISTANCE.md`](https://github.com/reckon-db-org/reckon-db/blob/main/plans/PLAN_TAMPER_RESISTANCE.md)
   for the full design and the deferred-scope list.
 - **guides/evoq.md** — *Notable Changes* extended with 1.15.0
   entry covering the `prev_event_hash` propagation and the
