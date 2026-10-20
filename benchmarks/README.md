@@ -41,7 +41,7 @@ Output lands in `results/<run-id>/` with:
 
 ## Methodology
 
-Single source of truth: [reckon-bench-harness/METHODOLOGY.md](https://github.com/reckon-db-org/reckon-bench-harness/blob/main/METHODOLOGY.md).
+Single source of truth: reckon-bench-harness's METHODOLOGY.md, which is not published yet.
 
 Paired-specific rule: **base and compare slices MUST share scenario parameters**. The joiner assumes same event size, same parallelism, same duration. Mismatched scenarios produce meaningless deltas.
 
