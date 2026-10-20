@@ -21,8 +21,9 @@ name: ci
 # dependency is not how this ecosystem builds. The profile declares the
 # dependency it actually needs, so `rebar3 as bench compile` fails saying the
 # package is not published, which is the true state, rather than a config that
-# reads as if nothing were missing. Publishing the harness is a release task,
-# recorded on macula-codebase-checks#2.
+# reads as if nothing were missing. Publishing the harness is not planned: the
+# Supervisor ruled it stays unpublished (macula-codebase-checks#2), so this gate
+# builds the half of the project that can be built and says which half it is.
 #
 # On push and pull request, not dispatch-only: the failure mode being prevented
 # is "nobody remembered to run it", and a gate that only runs when someone
