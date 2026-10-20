@@ -21,6 +21,9 @@ if [[ ! -d "$RUN_DIR" ]]; then
 fi
 
 printf '# Benchmark run summary\n\n'
+# The backticks are markdown around the substituted path, not command
+# substitution: this line writes a document, it does not run anything.
+# shellcheck disable=SC2016
 printf 'Run directory: `%s`\n\n' "$RUN_DIR"
 
 if [[ -f "${RUN_DIR}/system_info.json" ]]; then

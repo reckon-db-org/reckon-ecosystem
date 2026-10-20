@@ -1,0 +1,83 @@
+name: ci
+
+# Shellcheck, and a compile of the benchmark project, on every push to a branch
+# and every pull request.
+#
+# THIS REPOSITORY HAD NO CI. It is mostly documents, but `benchmarks/` is an
+# Erlang project with a rebar.config, and that project had stopped resolving at
+# all: it asked for `reckon_bench_harness ~> 0.1`, a package that is on no repo,
+# and for `reckon_evoq ~> 1.14`, a version range no published release satisfies,
+# and it uses jsone without declaring it. Nothing noticed, because nothing ran
+# it.
+#
+# Fixed in the same change: the dependencies are the current ones (reckon_db
+# 5.9, reckon_gater 3.10, evoq 1.23, reckon_evoq 2.7, jsone 1.9), and the
+# project compiles clean against them.
+#
+# The `bench` profile is NOT built, and that is the honest limit of this gate.
+# It adds `slices/`, whose modules implement the `reckon_bench_slice` behaviour
+# from reckon_bench_harness. That repository exists in the org
+# (reckon-db-org/reckon-bench-harness) but is not on hex, and a git or path
+# dependency is not how this ecosystem builds. The profile declares the
+# dependency it actually needs, so `rebar3 as bench compile` fails saying the
+# package is not published, which is the true state, rather than a config that
+# reads as if nothing were missing. Publishing the harness is a release task,
+# recorded on macula-codebase-checks#2.
+#
+# On push and pull request, not dispatch-only: the failure mode being prevented
+# is "nobody remembered to run it", and a gate that only runs when someone
+# remembers preserves exactly that condition.
+#
+# `branches: ['**']` IS LOAD-BEARING. A `push` event fires for tag refs as well,
+# so without it this would run a second time on every release tag. `**` matches
+# every branch and excludes tags.
+
+on:
+  push:
+    branches: ['**']
+    paths-ignore: ['**.md', 'assets/**', 'publications/**']
+  pull_request:
+    paths-ignore: ['**.md', 'assets/**', 'publications/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OTP_VERSION: '28.4.3'
+  REBAR3_VERSION: '3.27.0'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: shellcheck + benchmarks compile (OTP 28.4.3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shellcheck
+        run: shellcheck $(git ls-files '*.sh')
+
+      - name: Set up Erlang/OTP and rebar3
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          rebar3-version: ${{ env.REBAR3_VERSION }}
+          version-type: strict
+
+      - name: Cache hex deps
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/rebar3
+          key: reckon-ecosystem-otp${{ env.OTP_VERSION }}-${{ hashFiles('benchmarks/rebar.config') }}
+          restore-keys: reckon-ecosystem-otp${{ env.OTP_VERSION }}-
+
+      # The default profile only, for the reason in the header: the bench
+      # profile needs a behaviour from a package that is not released.
+      - name: Compile the benchmark project
+        working-directory: benchmarks
+        run: rebar3 compile

@@ -99,5 +99,9 @@ PATHS=""
 for d in _build/bench/lib/*/ebin _build/bench/checkouts/*/ebin _build/default/lib/*/ebin; do
     [[ -d "$d" ]] && PATHS="$PATHS $d"
 done
+# Include all ebin dirs so paired_join is loadable. `erl -pa` takes several
+# directories as separate arguments, so the list is deliberately unquoted: each
+# word is one -pa path, and quoting it would pass one concatenated name.
+# shellcheck disable=SC2086
 erl -noshell -pa $PATHS \
     -eval "paired_join:join(\"${RESULTS_DIR}/base.json\", \"${RESULTS_DIR}/compare.json\", \"${RESULTS_DIR}/paired.json\"), halt()."
