@@ -8,7 +8,7 @@ Every client follows the same shape: **one connection to one gateway endpoint**,
 
 ## reckon-go
 
-**Version:** 0.9.0 — [GitHub](https://github.com/reckon-db-org/reckon-go)
+**Version:** 0.10.0 — [GitHub](https://github.com/reckon-db-org/reckon-go)
 
 The import path ends in `reckon-go`; the Go package is `reckon`.
 
@@ -52,7 +52,7 @@ Console.WriteLine($"node={overview.Node} status={overview.Status}");
 
 ## reckon-py
 
-**Version:** 0.1.0 — [GitHub](https://github.com/reckon-db-org/reckon-py)
+**Version:** 0.2.0 — [GitHub](https://github.com/reckon-db-org/reckon-py)
 
 Python client for scripting, data workflows, and integration. Vendors the `.proto` files and generates Python stubs.
 
@@ -62,7 +62,7 @@ pip install reckon  # from the repo's packaging; see the README
 
 ## reckon-lazy (lazyreckon)
 
-**Version:** 0.4.0 — [GitHub](https://github.com/reckon-db-org/reckon-lazy)
+**Version:** 0.5.0 — [GitHub](https://github.com/reckon-db-org/reckon-lazy)
 
 `lazyreckon` is a terminal UI for operators and developers: browse stores, drill into streams, and inspect events without writing code. It is built on **reckon-go**, so it connects to the same gateway the same way.
 
@@ -73,7 +73,7 @@ lazyreckon --gateway gateway.example.org:50051
 ## Choosing a client
 
 - **Go** — the most complete surface (all sub-services); also the substrate for lazyreckon.
-- **.NET / Python** — v0.1.0, covering the core surface; grow with the contract.
+- **.NET / Python** — v0.1.0 / v0.2.0, covering the core surface; grow with the contract.
 - Any other gRPC-capable language can generate its own stubs from [reckon_proto](reckon-proto.md) directly — these clients are conveniences, not gatekeepers.
 
 ## See also

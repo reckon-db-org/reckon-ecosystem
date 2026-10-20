@@ -4,7 +4,7 @@
 
 reckon_gater is the shared foundation of the Reckon ecosystem. It defines the canonical record types, store interface, and gateway capabilities that all other packages depend on. Think of it as the API contract — reckon_db implements it, reckon_evoq consumes it, and your application code uses the types.
 
-**Version:** 3.10.0 | **License:** Apache 2.0
+**Version:** 3.11.2 | **License:** Apache 2.0
 
 - [GitHub](https://github.com/reckon-db-org/reckon-gater) | [HexDocs](https://hexdocs.pm/reckon_gater)
 

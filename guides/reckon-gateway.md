@@ -4,11 +4,11 @@
 
 reckon_gateway is a gRPC server that wraps the full ReckonDB API. It lets polyglot clients — Go, .NET, Python, anything that speaks gRPC — use ReckonDB as their event store without running on the BEAM. It serves the [reckon_proto](reckon-proto.md) contract and runs in two modes: **catalogue mode** (the default), which federates one or many remote reckon_db clusters over Erlang distribution and hosts no stores itself; and **embedded mode** (`RECKON_GATEWAY_STORE_ENABLED=true`), which boots a local store. Either way it shares the exact same semantics as a native BEAM client.
 
-**Version:** 0.27.0 | **License:** Apache 2.0
+**Version:** 0.30.1 | **License:** Apache 2.0
 
 - [GitHub](https://github.com/reckon-db-org/reckon-gateway)
 
-> **Status:** 0.27.0. The proto contract lives in [reckon_proto](reckon-proto.md) (SemVer at the wire level); expect minor breaks until 1.0.0. The gateway exposes DCB conditional appends and CCC payload-indexed reads (`DcbService`), tamper-resistance on the wire (`RecordedEvent.prev_event_hash` — the `mac` is never transmitted), and cluster self-healing diagnostics on `HealthService`. Requires store BEAMs on **reckon-db ~> 5.7** + **reckon-gater ~> 3.10**.
+> **Status:** 0.30.1. The proto contract lives in [reckon_proto](reckon-proto.md) (SemVer at the wire level); expect minor breaks until 1.0.0. The gateway exposes DCB conditional appends and CCC payload-indexed reads (`DcbService`), tamper-resistance on the wire (`RecordedEvent.prev_event_hash` — the `mac` is never transmitted), and cluster self-healing diagnostics on `HealthService`. Requires store BEAMs on **reckon-db ~> 5.7** + **reckon-gater ~> 3.10**.
 
 ## Quick Start
 

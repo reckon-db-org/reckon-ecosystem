@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- **Versions match the released packages (20 Oct 2026).** README table, guide headers and the dependency graph name reckon_db 5.11.11, evoq 1.27.0, reckon_gater 3.11.2, reckon_evoq 2.8.0, reckon_gateway 0.30.1, reckon_proto 0.8.1, reckon-go 0.10.0, reckon-py 0.2.0 and reckon-lazy 0.5.0. The dependency tables in the reckon-db and reckon-evoq guides name the requirements those releases declare (reckon_gater ~> 3.10; evoq ~> 1.22, reckon_gater ~> 3.7), not the 2.1 / 1.15 ones.
+
 ## [0.4.0] - 2026-07-06
 
 ### Tracks the July 2026 wave + adds the wire contract and polyglot client tier

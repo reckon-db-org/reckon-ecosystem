@@ -4,7 +4,7 @@
 
 reckon_proto is the **single source of truth** for how the outside world talks to ReckonDB. It is the set of `.proto` files that define every gRPC service, RPC, and message shape. The [gateway](reckon-gateway.md) generates its server stubs from these files; every polyglot client ([Go](polyglot-clients.md), [.NET](polyglot-clients.md), [Python](polyglot-clients.md)) generates its client stubs from the same files. Nothing hand-writes protobuf.
 
-**Version:** 0.8.0 | **License:** Apache 2.0
+**Version:** 0.8.1 | **License:** Apache 2.0
 
 - [GitHub](https://github.com/reckon-db-org/reckon-proto)
 
@@ -41,7 +41,7 @@ reckon_proto is a [buf](https://buf.build/) module (`buf.yaml`, `buf.gen.yaml`) 
 
 ```erlang
 %% reckon_gateway consumes the generated Erlang server stubs
-{reckon_proto, {git, "https://github.com/reckon-db-org/reckon-proto.git", {tag, "v0.8.0"}}}.
+{reckon_proto, {git, "https://github.com/reckon-db-org/reckon-proto.git", {tag, "v0.8.1"}}}.
 ```
 
 Clients pin the contract per their ecosystem:

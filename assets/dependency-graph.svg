@@ -49,7 +49,7 @@
   <g filter="url(#shadow3)">
     <rect x="500" y="95" width="220" height="50" rx="10" fill="#065f46"/>
     <text x="610" y="118" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">evoq</text>
-    <text x="610" y="135" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#a7f3d0">CQRS + DCB/CCC &#xb7; v1.23.0</text>
+    <text x="610" y="135" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#a7f3d0">CQRS + DCB/CCC &#xb7; v1.27.0</text>
   </g>
 
   <!-- Level 1: shared types -->
@@ -60,7 +60,7 @@
   <g filter="url(#shadow3)">
     <rect x="340" y="195" width="220" height="50" rx="10" fill="#0c4a6e"/>
     <text x="450" y="218" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_gater</text>
-    <text x="450" y="235" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bae6fd">Types + DCB/CCC tag_filter &#xb7; v3.10.0</text>
+    <text x="450" y="235" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bae6fd">Types + DCB/CCC tag_filter &#xb7; v3.11.2</text>
   </g>
 
   <!-- Level 2: core -->
@@ -71,7 +71,7 @@
   <g filter="url(#shadow3)">
     <rect x="180" y="305" width="220" height="50" rx="10" fill="#4c1d95"/>
     <text x="290" y="328" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_db</text>
-    <text x="290" y="345" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e9d5ff">Event store + self-healing &#xb7; v5.9.0</text>
+    <text x="290" y="345" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e9d5ff">Event store + self-healing &#xb7; v5.11.11</text>
   </g>
 
   <!-- Level 3: adapter -->
@@ -82,7 +82,7 @@
   <g filter="url(#shadow3)">
     <rect x="340" y="415" width="220" height="50" rx="10" fill="#831843"/>
     <text x="450" y="438" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_evoq</text>
-    <text x="450" y="455" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fce7f3">Adapter &#xb7; v2.7.0</text>
+    <text x="450" y="455" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#fce7f3">Adapter &#xb7; v2.8.0</text>
   </g>
 
   <!-- Level 4: deployable gateway -->
@@ -93,7 +93,7 @@
   <g filter="url(#shadow3)">
     <rect x="500" y="525" width="220" height="50" rx="10" fill="#1e40af"/>
     <text x="610" y="548" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_gateway</text>
-    <text x="610" y="565" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bfdbfe">gRPC ingress + catalogue &#xb7; v0.27.0</text>
+    <text x="610" y="565" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#bfdbfe">gRPC ingress + catalogue &#xb7; v0.30.1</text>
   </g>
 
   <!-- Level 5: wire contract -->
@@ -104,7 +104,7 @@
   <g filter="url(#shadow3)">
     <rect x="340" y="635" width="220" height="50" rx="10" fill="#334155"/>
     <text x="450" y="658" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#fff">reckon_proto</text>
-    <text x="450" y="675" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#cbd5e1">gRPC .proto contract &#xb7; v0.8.0</text>
+    <text x="450" y="675" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#cbd5e1">gRPC .proto contract &#xb7; v0.8.1</text>
   </g>
 
   <!-- Level 6: polyglot clients -->
@@ -115,14 +115,14 @@
   <g filter="url(#shadow3)">
     <rect x="40" y="750" width="185" height="48" rx="10" fill="#155e75"/>
     <text x="132" y="772" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#fff">reckon-go</text>
-    <text x="132" y="788" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#a5f3fc">Go client &#xb7; v0.9.0</text>
+    <text x="132" y="788" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#a5f3fc">Go client &#xb7; v0.10.0</text>
   </g>
 
   <!-- reckon-lazy -->
   <g filter="url(#shadow3)">
     <rect x="245" y="750" width="185" height="48" rx="10" fill="#134e4a"/>
     <text x="337" y="772" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#fff">reckon-lazy</text>
-    <text x="337" y="788" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#99f6e4">TUI (lazyreckon) &#xb7; v0.4.0</text>
+    <text x="337" y="788" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#99f6e4">TUI (lazyreckon) &#xb7; v0.5.0</text>
   </g>
 
   <!-- reckon-dotnet -->
@@ -136,7 +136,7 @@
   <g filter="url(#shadow3)">
     <rect x="655" y="750" width="185" height="48" rx="10" fill="#1e3a8a"/>
     <text x="747" y="772" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#fff">reckon-py</text>
-    <text x="747" y="788" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#bfdbfe">Python client &#xb7; v0.1.0</text>
+    <text x="747" y="788" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#bfdbfe">Python client &#xb7; v0.2.0</text>
   </g>
 
   <!-- === DEPENDENCY ARROWS === -->

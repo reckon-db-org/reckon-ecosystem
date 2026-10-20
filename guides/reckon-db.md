@@ -4,7 +4,7 @@
 
 reckon_db is a distributed event store built entirely in Erlang/OTP. It uses [Khepri](https://github.com/rabbitmq/khepri) for tree-structured data storage and [Ra](https://github.com/rabbitmq/ra) for Raft consensus. Events are stored in append-only streams and replicated across cluster nodes.
 
-**Version:** 5.9.0 | **License:** Apache 2.0
+**Version:** 5.11.11 | **License:** Apache 2.0
 
 > **Since the 2.1 wave:** reckon_db now provides multi-stream consistency — Dynamic Consistency Boundary (DCB) conditional appends and Command Context Consistency (CCC) payload-indexed conditions (see [DCB &amp; CCC](dcb-and-ccc.md)) — and **continuous cluster self-healing** (a per-store healer that rejoins a drifted/split replica to quorum, with a wedge-proof coordinator and drift/heal telemetry).
 
@@ -186,7 +186,7 @@ Each store runs its own supervision subtree. You can have multiple independent s
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| reckon_gater | ~> 2.1 | Shared types and store interface |
+| reckon_gater | ~> 3.10 | Shared types and store interface |
 | khepri | 0.17.2 | Tree-structured storage |
 | telemetry | 1.3.0 | Metrics and instrumentation |
 | reckon_nifs | (optional) | Rust NIF acceleration |
