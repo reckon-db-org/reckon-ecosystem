@@ -82,3 +82,9 @@ jobs:
       - name: Compile the benchmark project
         working-directory: benchmarks
         run: rebar3 compile
+
+      # The structural floor (macula-codebase-checks#9): nesting 2, no nested
+      # try/catch, no if, functions at most 60 lines, over src/ and slices/.
+      - name: Lint the benchmark project
+        working-directory: benchmarks
+        run: rebar3 as lint lint

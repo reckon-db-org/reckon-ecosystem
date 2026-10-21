@@ -21,18 +21,9 @@ join(BasePath, ComparePath, OutPath) ->
     BaseLat = maps:get(<<"latency_ns">>, Base),
     CmpLat  = maps:get(<<"latency_ns">>, Cmp),
 
-    ThrDelta = case BaseThr of
-                   +0.0 -> 0.0;
-                   0    -> 0.0;
-                   _    -> (CmpThr - BaseThr) / BaseThr * 100
-               end,
+    ThrDelta = throughput_delta(BaseThr, CmpThr),
     PctDelta = fun(Key) ->
-        B = maps:get(Key, BaseLat, 0),
-        C = maps:get(Key, CmpLat,  0),
-        case B of
-            0 -> 0.0;
-            _ -> (C - B) / B * 100
-        end
+        latency_delta(maps:get(Key, BaseLat, 0), maps:get(Key, CmpLat, 0))
     end,
 
     Report = #{
@@ -59,10 +50,23 @@ join(BasePath, ComparePath, OutPath) ->
                maps:get(<<"scenario">>, Cmp),
                CmpThr,
                maps:get(<<"p99">>, CmpLat, 0) / 1_000_000]),
-    ThrSign = if ThrDelta >= 0 -> "+"; true -> "" end,
+    ThrSign = sign(ThrDelta),
     P99Delta = PctDelta(<<"p99">>),
-    P99Sign  = if P99Delta >= 0 -> "+"; true -> "" end,
+    P99Sign  = sign(P99Delta),
     io:format("delta  : throughput ~s~.1f%   p99 ~s~.1f%~n",
               [ThrSign, ThrDelta, P99Sign, P99Delta]),
     io:format("========================================================~n~n"),
     ok.
+
+%% Percent change in throughput; a zero base (integer or float) reports 0.0.
+throughput_delta(+0.0, _Cmp) -> 0.0;
+throughput_delta(0, _Cmp) -> 0.0;
+throughput_delta(Base, Cmp) -> (Cmp - Base) / Base * 100.
+
+%% Percent change in one latency percentile; an absent (0) base reports 0.0.
+latency_delta(0, _Cmp) -> 0.0;
+latency_delta(Base, Cmp) -> (Cmp - Base) / Base * 100.
+
+%% The sign printed in front of a non-negative delta.
+sign(Delta) when Delta >= 0 -> "+";
+sign(_Delta) -> "".
