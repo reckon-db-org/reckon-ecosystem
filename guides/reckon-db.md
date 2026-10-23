@@ -24,7 +24,7 @@ reckon_db is a distributed event store built entirely in Erlang/OTP. It uses [Kh
 A stream is an ordered, append-only sequence of events identified by a stream ID. Each aggregate instance typically maps to one stream:
 
 ```
-stream_id: "order-order-123"
+stream_id: "order-018f6a7b8c9d4e5f60718293a4b5c6d9"
   ├── version 0: {order_placed_v1, ...}
   ├── version 1: {payment_received_v1, ...}
   └── version 2: {order_shipped_v1, ...}
@@ -38,7 +38,7 @@ Events are wrapped in the `reckon_event` record (defined in reckon_gater):
 #reckon_event{
     event_id,       %% UUID
     event_type,     %% Binary, e.g. <<"order_placed_v1">>
-    stream_id,      %% Binary, e.g. <<"order-order-123">>
+    stream_id,      %% Binary, e.g. <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>
     version,        %% Non-negative integer (0-based)
     data,           %% Map — your business event payload
     metadata,       %% Map — correlation_id, causation_id, etc.
@@ -98,29 +98,29 @@ Events = [
       data => #{order_id => <<"ord-1">>, total => 4999},
       metadata => #{correlation_id => <<"req-abc">>}}
 ],
-{ok, Written} = reckon_db:append(my_store, <<"order-ord-1">>, Events).
+{ok, Written} = reckon_db:append(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, Events).
 ```
 
 ### Read Events
 
 ```erlang
 %% Read all events from a stream
-{ok, Events} = reckon_db:read_stream(my_store, <<"order-ord-1">>).
+{ok, Events} = reckon_db:read_stream(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>).
 
 %% Read from a specific version
-{ok, Events} = reckon_db:read_stream(my_store, <<"order-ord-1">>, #{from => 5}).
+{ok, Events} = reckon_db:read_stream(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, #{from => 5}).
 ```
 
 ### Subscribe
 
 ```erlang
 %% Catch-up subscription (starts from beginning)
-{ok, SubId} = reckon_db:subscribe(my_store, <<"order-ord-1">>, self(), #{
+{ok, SubId} = reckon_db:subscribe(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, self(), #{
     from => 0
 }).
 
 %% Live subscription (only new events)
-{ok, SubId} = reckon_db:subscribe(my_store, <<"order-ord-1">>, self(), #{
+{ok, SubId} = reckon_db:subscribe(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, self(), #{
     from => latest
 }).
 
@@ -134,13 +134,13 @@ end.
 
 ```erlang
 %% Save snapshot
-ok = reckon_db:save_snapshot(my_store, <<"order-ord-1">>, #{
+ok = reckon_db:save_snapshot(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, #{
     version => 100,
     state => AggregateState
 }).
 
 %% Load latest snapshot
-{ok, Snapshot} = reckon_db:load_snapshot(my_store, <<"order-ord-1">>).
+{ok, Snapshot} = reckon_db:load_snapshot(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>).
 ```
 
 ### Cross-Stream Queries

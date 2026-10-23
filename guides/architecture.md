@@ -59,7 +59,7 @@ Every domain event is wrapped in the canonical `#reckon_event{}` record (defined
 #reckon_event{
     event_id              :: binary(),           %% UUIDv7
     event_type            :: binary(),           %% e.g., <<"user_registered_v1">>
-    stream_id             :: binary(),           %% e.g., <<"user-user123">>
+    stream_id             :: binary(),           %% e.g., <<"user-018f6a7b8c9d4e5f60718293a4b5c6d7">>
     version               :: non_neg_integer(),  %% Stream position (0-based)
     data                  :: map() | binary(),   %% YOUR business event payload
     metadata              :: map(),              %% Correlation, causation, context
@@ -80,18 +80,18 @@ Your aggregate only produces the `data` field. The envelope is added by the infr
 Events are organized into streams. Each aggregate instance gets its own stream:
 
 ```
-Stream: "order-order-123"
+Stream: "order-018f6a7b8c9d4e5f60718293a4b5c6d9"
   ├── Event 0: order_placed_v1
   ├── Event 1: order_confirmed_v1
   ├── Event 2: order_shipped_v1
   └── Event 3: order_delivered_v1
 
-Stream: "order-order-456"
+Stream: "order-018f6a7b8c9d4e5f60718293a4b5c6da"
   ├── Event 0: order_placed_v1
   └── Event 1: order_cancelled_v1
 ```
 
-Stream IDs follow the convention: `{aggregate_type}-{aggregate_id}`
+A stream id is `<prefix>-<32 hex>`: 1 to 32 lowercase letters naming the aggregate type, one hyphen, and exactly 32 lowercase hex digits (a UUID without its hyphens). The store refuses any other shape. [Stream Ids](https://hexdocs.pm/reckon_gater/stream_ids.html) in reckon-gater states the rule and how to make one; an evoq aggregate id is used as the stream id, so it must have this shape too.
 
 ## Read-Side Architecture
 

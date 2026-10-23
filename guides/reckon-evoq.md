@@ -46,7 +46,7 @@ Cmd = #{
     items => [#{sku => <<"WIDGET-1">>, qty => 3}]
 },
 
-StreamId = <<"order-ord-123">>,
+StreamId = <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>,
 Result = reckon_evoq:dispatch(my_store, StreamId, order_aggregate, Cmd).
 %% => {ok, [#{event_type => <<"order_placed_v1">>, ...}]}
 ```
@@ -64,7 +64,7 @@ If the command is rejected by the aggregate, no events are persisted.
 
 ```erlang
 %% Subscribe to events on a stream
-{ok, SubId} = reckon_evoq:subscribe(my_store, <<"order-ord-123">>, self(), #{
+{ok, SubId} = reckon_evoq:subscribe(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, self(), #{
     from => 0   %% catch-up from beginning
 }).
 
@@ -91,7 +91,7 @@ end.
 
 ```erlang
 %% Save aggregate state snapshot
-reckon_evoq:save_snapshot(my_store, <<"order-ord-123">>, #{
+reckon_evoq:save_snapshot(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, #{
     version => CurrentVersion,
     state => AggregateState
 }).

@@ -52,8 +52,8 @@ conn, _ := grpc.Dial("localhost:50051", grpc.WithInsecure())
 client := gatewayv1.NewStreamServiceClient(conn)
 
 resp, _ := client.AppendEvents(ctx, &gatewayv1.AppendEventsRequest{
-    StoreId:         "default_store",
-    StreamId:        "user-123",
+    StoreId:         "my_store",
+    StreamId:        "user-018f6a7b8c9d4e5f60718293a4b5c6d7",
     ExpectedVersion: -1, // NO_STREAM
     Events: []*gatewayv1.ProposedEvent{{
         EventType: "user_registered_v1",

@@ -114,7 +114,7 @@ Cmd = #{
 },
 
 %% Dispatch via reckon_evoq
-StreamId = <<"counter-counter-1">>,
+StreamId = <<"counter-018f6a7b8c9d4e5f60718293a4b5c6dd">>,
 Result = reckon_evoq:dispatch(my_app_store, StreamId, counter_aggregate, Cmd).
 %% => {ok, [Event1]}
 ```
@@ -123,7 +123,7 @@ Result = reckon_evoq:dispatch(my_app_store, StreamId, counter_aggregate, Cmd).
 
 ```erlang
 %% Subscribe to all events on a stream
-{ok, Sub} = reckon_evoq:subscribe(my_app_store, <<"counter-counter-1">>, self()),
+{ok, Sub} = reckon_evoq:subscribe(my_app_store, <<"counter-018f6a7b8c9d4e5f60718293a4b5c6dd">>, self()),
 
 %% Receive events
 receive
