@@ -139,7 +139,7 @@ ok = telemetry:attach(<<"dispatch-metrics">>, [evoq, dispatch, stop],
 | Result | Meaning | Action |
 |-------|---------|--------|
 | `{error, Reason}` from your `execute/2` | The aggregate refused the command (`unknown_command`, `below_zero`, ...) | Nothing was stored; the reason is yours to define |
-| `{error, {invalid_stream_id, Reason, Id}}` (reckon-db 5.12 and older; newer releases add the rule as a fourth element) | The aggregate id is not a valid stream id | Use `<prefix>-<32 hex>`, e.g. `reckon_gater_stream_id:new(order)` |
+| `{error, {invalid_stream_id, Reason, Id}}` (reckon-db 5.11.13 and older; newer releases add the rule as a fourth element) | The aggregate id is not a valid stream id | Use `<prefix>-<32 hex>`, e.g. `reckon_gater_stream_id:new(order)` |
 | `{error, wrong_expected_version}` | Another writer appended to the stream first, and evoq's retry did not resolve it | evoq rebuilds the aggregate and retries once by itself; if this reaches you, retry the dispatch |
 
 A brand-new aggregate is not an error: evoq starts it from `init/1`.
