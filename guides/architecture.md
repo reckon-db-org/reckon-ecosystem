@@ -32,31 +32,33 @@ The critical insight: **reckon_evoq depends on evoq + reckon_gater, NOT on recko
 
 ```
 1. Application code dispatches a command
-   └── reckon_evoq:dispatch(Store, StreamId, Aggregate, Cmd)
+   └── evoq_router:dispatch(evoq_command:new(Type, Aggregate, AggregateId, Payload))
 
-2. reckon_evoq loads current aggregate state
-   └── Reads events from reckon_db via reckon_gater API
+2. evoq loads current aggregate state (first use only)
+   └── Aggregate:init(AggregateId), then the stream's events, read
+       through reckon_evoq_adapter and reckon_gater
    └── Replays events through Aggregate:apply/2
 
 3. evoq executes the command
-   └── Aggregate:execute(CurrentState, Command)
+   └── Aggregate:execute(CurrentState, Payload)
    └── Returns {ok, [Events]} or {error, Reason}
 
-4. reckon_evoq persists new events
-   └── Appends to stream in reckon_db
-   └── Events wrapped in evoq_event envelope
+4. evoq persists new events through reckon_evoq_adapter
+   └── Appends to the stream named by AggregateId in reckon_db
+   └── Everything but event_type is stored as the event's data
+   └── dispatch returns {ok, Version, Events}
 
 5. Subscriptions are notified
    └── reckon_db delivers events to subscribers
    └── Catch-up + live delivery
 ```
 
-### The reckon_event Envelope
+### The event Envelope
 
-Every domain event is wrapped in the canonical `#reckon_event{}` record (defined in `reckon-gater`, header `reckon_gater/include/reckon_gater_types.hrl`). The envelope adds operational metadata:
+Every domain event is wrapped in the canonical `#event{}` record (defined in `reckon-gater`, header `reckon_gater/include/reckon_gater_types.hrl`). The envelope adds operational metadata:
 
 ```erlang
-#reckon_event{
+#event{
     event_id              :: binary(),           %% UUIDv7
     event_type            :: binary(),           %% e.g., <<"user_registered_v1">>
     stream_id             :: binary(),           %% e.g., <<"user-018f6a7b8c9d4e5f60718293a4b5c6d7">>
@@ -105,7 +107,8 @@ A stream id is `<prefix>-<32 hex>`: 1 to 32 lowercase letters naming the aggrega
    └── Live: delivers new events in real-time
 
 3. Projection transforms event into read model
-   └── evoq_projection:handle_event/2
+   └── Projection:project(Event, Metadata, State, ReadModel), for the
+       event types its interested_in/0 names
    └── Updates SQLite, ETS, or any read store
 
 4. Query reads from the read model
@@ -152,19 +155,23 @@ Node A (Leader)          Node B (Follower)       Node C (Follower)
 
 Writes go to the leader, are replicated to a majority, then acknowledged. Reads can happen on any node (with configurable consistency).
 
-### Embedded Mode
+### Single-Node Mode
 
-For simpler deployments, reckon_db also runs in embedded mode — a single-node event store within your application:
+For simpler deployments, a store runs in `single` mode: one node, inside your
+application's own release. The store is declared in `config/sys.config` and
+starts with the `reckon_db` application:
 
 ```erlang
-%% Each domain service starts its own embedded store
-{reckon_db_sup, start_store, [#{
-    name => my_domain_store,
-    data_dir => "/var/lib/my_app/my_domain"
-}]}
+{reckon_db, [
+    {stores, [
+        {my_domain_store, [{data_dir, "data/my_domain"}, {mode, single}]}
+    ]}
+]}
 ```
 
-This is how Hecate uses Reckon — each domain service (setup_venture, design_division, etc.) runs its own embedded reckon_db instance.
+Each domain service declares its own store this way; stores are not shared
+across domains. The [Getting Started](getting-started.md) guide uses exactly
+this configuration.
 
 ## Aggregate Design
 
@@ -173,13 +180,17 @@ This is how Hecate uses Reckon — each domain service (setup_venture, design_di
 ```erlang
 -behaviour(evoq_aggregate).
 
-%% REQUIRED callbacks:
--callback execute(State :: map(), Command :: map()) ->
+%% Required callbacks (from evoq_aggregate.erl):
+-callback init(AggregateId :: binary()) -> {ok, State :: term()}.
+-callback execute(State :: term(), Command :: map()) ->
     {ok, [Event :: map()]} | {error, Reason :: term()}.
+-callback apply(State :: term(), Event :: map()) -> NewState :: term().
 
--callback apply(State :: map(), Event :: map()) ->
-    NewState :: map().
+%% Optional: state_module/0, snapshot/1, from_snapshot/1.
 ```
+
+The `Command` map `execute/2` receives is the command's payload, not the
+command record.
 
 ### State Comes First
 
@@ -187,11 +198,9 @@ This is critical: evoq calls `execute(State, Command)` with **State as the first
 
 ```erlang
 %% Guard: only active aggregates can accept domain commands
-execute(#{lifecycle_state := active} = State, #{command_type := <<"place_order_v1">>} = Cmd) ->
-    %% Process the command...
-    {ok, Events};
-
-execute(#{lifecycle_state := Other}, #{command_type := <<"place_order_v1">>}) ->
+execute(#{lifecycle_state := active}, #{command_type := place_order, items := Items}) ->
+    {ok, [#{event_type => <<"order_placed_v1">>, items => Items}]};
+execute(#{lifecycle_state := Other}, #{command_type := place_order}) ->
     {error, {not_active, Other}}.
 ```
 
@@ -225,17 +234,19 @@ event_type => <<"order_placed_v2">>   %% Added new fields
 Projections handle multiple versions:
 
 ```erlang
-handle_event(#{event_type := <<"order_placed_v1">>} = E, State) ->
-    upgrade_and_project(E, State);
-handle_event(#{event_type := <<"order_placed_v2">>} = E, State) ->
-    project_v2(E, State).
+interested_in() -> [<<"order_placed_v1">>, <<"order_placed_v2">>].
+
+project(#{event_type := <<"order_placed_v1">>} = E, Meta, State, RM) ->
+    project(upgrade_v1(E), Meta, State, RM);
+project(#{event_type := <<"order_placed_v2">>} = E, _Meta, State, RM) ->
+    project_v2(E, State, RM).
 ```
 
 Old events are never modified. New versions add fields. This preserves the immutable nature of the event log.
 
 ## On-Disk Format and Tamper Resistance
 
-> **Current wave** (`reckon-gater` 3.10.0, `reckon-db` 5.9.0, `evoq` 1.23.0, `reckon-evoq` 2.7.0, `reckon-gateway` 0.27.0; wire contract `reckon-proto` 0.8.0): tamper-evident events and snapshots are available as an opt-in per-store feature — stores configured with `integrity` enabled write HMAC-protected, chain-hashed events and verify them on every read surface. Since the 2.1 wave the stack also added multi-stream consistency ([DCB &amp; CCC](dcb-and-ccc.md)) and continuous cluster self-healing in reckon_db.
+> **Since the 2.1 wave** (`reckon-gater` 2.1, `reckon-db` 2.1): tamper-evident events and snapshots are available as an opt-in per-store feature — stores configured with `integrity` enabled write HMAC-protected, chain-hashed events and verify them on every read surface. Since the 2.1 wave the stack also added multi-stream consistency ([DCB &amp; CCC](dcb-and-ccc.md)) and continuous cluster self-healing in reckon_db.
 
 The on-disk event store is built on Khepri (tree-structured storage) and Ra (Raft consensus). Both layers protect against **corruption** via WAL CRCs — but CRCs do not protect against **intentional tampering**, since an attacker can recompute them trivially. The 2.1 wave addresses the gap above the storage primitive.
 
@@ -258,7 +269,7 @@ The key is 32 random bytes (HMAC-SHA256). Loaded into `persistent_term` at store
 
 ### What gets stored
 
-The `#reckon_event{}` record (in `reckon-gater`) carries three integrity fields:
+The `#event{}` record (in `reckon-gater`) carries three integrity fields:
 
 | Field | Purpose | When populated |
 |-------|---------|----------------|
@@ -266,7 +277,7 @@ The `#reckon_event{}` record (in `reckon-gater`) carries three integrity fields:
 | `mac :: {KeyId, MacBytes} \| undefined` | HMAC-SHA256 over canonical bytes of the event, domain-tagged `evt\|`. Symmetric secret bound to the per-store key. Verified at the storage boundary only; **never** propagated to external consumers. | Events written on integrity-enabled stores |
 | `signature :: binary() \| undefined` | Reserved for Ed25519 cross-trust-domain authenticity in a future release. Not populated in 2.1.x. | Not populated in 2.1.x |
 
-The `#reckon_snapshot{}` record carries two analogous fields:
+The `#snapshot{}` record carries two analogous fields:
 
 | Field | Purpose |
 |-------|---------|
@@ -327,18 +338,18 @@ The full design — threat model, layer-by-layer implementation plan, key manage
 
 ## Cross-Stream Queries
 
-Tags enable querying events across streams:
+Tags enable querying events across streams. With evoq, tags travel in the
+command's metadata, and every event the command produces carries them:
 
 ```erlang
-%% Tag events during creation
-Event = #{
-    event_type => <<"order_placed_v1">>,
-    tags => [<<"realm:io.macula">>, <<"region:eu-west">>],
-    ...
-}
+%% Tag the events a command produces
+Command = evoq_command:new(place_order, order_aggregate, OrderId,
+    #{command_type => place_order, items => Items},
+    #{tags => [<<"realm:io.macula">>, <<"region:eu-west">>]}),
+{ok, _Version, _Events} = evoq_router:dispatch(Command),
 
-%% Query by tag
-{ok, Events} = reckon_db:query_by_tag(Store, <<"realm:io.macula">>).
+%% Query by tag, across all streams
+{ok, Events} = reckon_db_streams:read_by_tags(my_store, [<<"realm:io.macula">>], any, 100).
 ```
 
 ## Next Steps

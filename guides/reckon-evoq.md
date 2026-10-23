@@ -4,7 +4,7 @@
 
 reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's event store. It translates between evoq's dispatch/subscribe API and reckon_gater's store interface, enabling seamless event persistence and delivery.
 
-**Version:** 2.8.0 | **License:** Apache 2.0
+**Version:** 2.9.0 | **License:** Apache 2.0
 
 - [GitHub](https://github.com/reckon-db-org/reckon-evoq) | [HexDocs](https://hexdocs.pm/reckon_evoq)
 
@@ -13,8 +13,8 @@ reckon_evoq is the adapter that connects evoq's CQRS framework to reckon_db's ev
 ```erlang
 %% rebar.config
 {deps, [
-    {reckon_db, "~> 5.9"},      %% Event store
-    {reckon_evoq, "~> 2.7"}     %% Adapter (brings evoq as transitive dep)
+    {reckon_db, "~> 5.11"},     %% Event store
+    {reckon_evoq, "~> 2.9"}     %% Adapter (brings evoq as transitive dep)
 ]}.
 ```
 
@@ -34,92 +34,84 @@ Your Application
         └── reckon_gater (types/interface)
 ```
 
+## Configuration
+
+reckon_evoq has no API of its own to call: it is the module evoq uses for
+storage once you point evoq at it. In `config/sys.config`, beside the store:
+
+```erlang
+{evoq, [
+    {store_id, my_store},
+    {event_store_adapter, reckon_evoq_adapter},
+    {snapshot_store_adapter, reckon_evoq_adapter},
+    {subscription_adapter, reckon_evoq_adapter}
+]}
+```
+
 ## Core Operations
 
 ### Command Dispatch
 
-```erlang
-%% Dispatch a command to an aggregate
-Cmd = #{
-    command_type => <<"place_order_v1">>,
-    order_id => <<"ord-123">>,
-    items => [#{sku => <<"WIDGET-1">>, qty => 3}]
-},
+You dispatch through evoq; the adapter does the storage underneath:
 
-StreamId = <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>,
-Result = reckon_evoq:dispatch(my_store, StreamId, order_aggregate, Cmd).
-%% => {ok, [#{event_type => <<"order_placed_v1">>, ...}]}
+```erlang
+OrderId = <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>,
+Command = evoq_command:new(place_order, order_aggregate, OrderId,
+    #{command_type => place_order, items => [#{sku => <<"WIDGET-1">>, qty => 3}]}),
+{ok, Version, Events} = evoq_router:dispatch(Command).
 ```
+
+The aggregate id is also the stream id, so it must be `<prefix>-<32 hex>`
+([Stream Ids](https://hexdocs.pm/reckon_gater/stream_ids.html)). evoq hands
+`order_aggregate:execute/2` the payload, which is why the payload carries
+`command_type`. The [Getting Started](getting-started.md) guide builds a
+complete aggregate and runs it.
 
 ### What Dispatch Does
 
-1. **Load state** — Read events from reckon_db for the stream, replay through `Aggregate:apply/2`
-2. **Execute command** — Call `Aggregate:execute(State, Command)`
-3. **Persist events** — Append returned events to the stream in reckon_db
-4. **Return** — `{ok, Events}` or `{error, Reason}`
+1. **Load state**: on first use, `Aggregate:init/1`, then the stream's events
+   (after the latest snapshot, if any) are replayed through `Aggregate:apply/2`.
+2. **Execute command**: `Aggregate:execute(State, Payload)`.
+3. **Persist events**: the returned events are appended to the stream, with
+   everything except `event_type` stored as the event's data.
+4. **Return**: `{ok, Version, Events}`, or `{error, Reason}` if `execute/2`
+   refused the command.
 
 If the command is rejected by the aggregate, no events are persisted.
 
-### Event Subscriptions
+### Reacting to Events
 
-```erlang
-%% Subscribe to events on a stream
-{ok, SubId} = reckon_evoq:subscribe(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, self(), #{
-    from => 0   %% catch-up from beginning
-}).
-
-%% Or subscribe to all events (all streams)
-{ok, SubId} = reckon_evoq:subscribe_all(my_store, self(), #{from => 0}).
-
-%% Receive events
-receive
-    {reckon_event, SubId, #evoq_event{} = Event} ->
-        %% Process the event
-        handle_event(Event)
-end.
-```
-
-### Subscription Modes
-
-| Mode | Option | Behavior |
-|------|--------|----------|
-| Catch-up | `#{from => 0}` | Replay all events, then switch to live |
-| Live | `#{from => latest}` | Only new events |
-| Resume | `#{from => Position}` | Start from a saved position |
+Inside evoq, events reach your code through event handlers, projections and
+process managers, which subscribe through this adapter for you: see evoq's
+[projections](https://hexdocs.pm/evoq/projections.html) and
+[event handlers](https://hexdocs.pm/evoq/event_handlers.html) guides. To watch
+a stream directly, use the store's subscription API
+(`reckon_db_subscriptions:subscribe/5` with `#{subscriber => self()}`; see the
+[reckon_db guide](reckon-db.md#subscribe)).
 
 ### Snapshots
 
-```erlang
-%% Save aggregate state snapshot
-reckon_evoq:save_snapshot(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, #{
-    version => CurrentVersion,
-    state => AggregateState
-}).
-
-%% Snapshots are loaded automatically during dispatch
-%% (load snapshot → replay events after snapshot → execute command)
-```
+evoq saves a snapshot through the adapter every 100 events by default
+(`{evoq, [{snapshot_every, N}]}`), and loads the latest one before replaying
+when an aggregate starts. An aggregate takes part by exporting the optional
+`snapshot/1` and `from_snapshot/1` callbacks.
 
 ## Supervisor Integration
 
-In your domain service supervisor:
+The store starts with the `reckon_db` application, from its `stores`
+configuration, so your own supervisor only starts your desks:
 
 ```erlang
 -module(manage_orders_sup).
 -behaviour(supervisor).
 
-init([]) ->
-    StoreConfig = #{
-        name => manage_orders_store,
-        data_dir => "/var/lib/my_app/manage_orders"
-    },
-    Children = [
-        %% Start embedded event store
-        #{id => event_store,
-          start => {reckon_db_sup, start_store, [StoreConfig]},
-          type => supervisor},
+-export([start_link/0, init/1]).
 
-        %% Start domain-specific desks (vertical slices)
+start_link() ->
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+
+init([]) ->
+    Children = [
         #{id => place_order_sup,
           start => {place_order_sup, start_link, []},
           type => supervisor}
@@ -127,36 +119,30 @@ init([]) ->
     {ok, {#{strategy => one_for_one, intensity => 5, period => 10}, Children}}.
 ```
 
-Each domain service starts its **own** embedded reckon_db instance. Stores are not shared across domains.
+Each domain service names its **own** store in that configuration. Stores are not shared across domains.
 
 ## Telemetry
 
-reckon_evoq emits telemetry events for monitoring:
+reckon_evoq emits no telemetry of its own: dispatch and aggregate events come
+from evoq, and store operations from reckon_db and reckon_gater. evoq's
+dispatch events are `[evoq, dispatch, start]`, `[evoq, dispatch, stop]` and
+`[evoq, dispatch, exception]`; per-aggregate ones include
+`[evoq, aggregate, execute, stop]` (all in evoq's `evoq_telemetry.hrl`).
 
 ```erlang
-%% Events:
-[reckon, evoq, dispatch, start]        %% Command dispatch begins
-[reckon, evoq, dispatch, stop]         %% Command dispatch completes
-[reckon, evoq, dispatch, exception]    %% Command dispatch fails
-[reckon, evoq, subscribe, start]       %% Subscription starts
-[reckon, evoq, event, delivered]       %% Event delivered to subscriber
-```
-
-Attach handlers for metrics:
-
-```erlang
-:telemetry.attach("dispatch-metrics", [reckon, evoq, dispatch, stop],
-    fun handle_dispatch/4, #{}).
+ok = telemetry:attach(<<"dispatch-metrics">>, [evoq, dispatch, stop],
+    fun my_metrics:handle_dispatch/4, #{}).
 ```
 
 ## Error Handling
 
-| Error | Meaning | Action |
+| Result | Meaning | Action |
 |-------|---------|--------|
-| `{error, unknown_command}` | Aggregate doesn't handle this command type | Check command_type spelling and aggregate execute/2 clauses |
-| `{error, {not_active, State}}` | Lifecycle guard rejected command | Send lifecycle command first (start, resume) |
-| `{error, stream_not_found}` | No events for this stream | This is normal for new aggregates — initial state is `#{}` |
-| `{error, optimistic_concurrency}` | Another writer modified the stream | Retry the dispatch |
+| `{error, Reason}` from your `execute/2` | The aggregate refused the command (`unknown_command`, `below_zero`, ...) | Nothing was stored; the reason is yours to define |
+| `{error, {invalid_stream_id, Reason, Id}}` (reckon-db 5.12 and older; newer releases add the rule as a fourth element) | The aggregate id is not a valid stream id | Use `<prefix>-<32 hex>`, e.g. `reckon_gater_stream_id:new(order)` |
+| `{error, wrong_expected_version}` | Another writer appended to the stream first, and evoq's retry did not resolve it | evoq rebuilds the aggregate and retries once by itself; if this reaches you, retry the dispatch |
+
+A brand-new aggregate is not an error: evoq starts it from `init/1`.
 
 ## Dependencies
 
@@ -165,6 +151,9 @@ Attach handlers for metrics:
 | evoq | ~> 1.22 | CQRS framework (dispatch, aggregate behaviours) |
 | reckon_gater | ~> 3.7 | Shared types (event records, store interface) |
 | telemetry | ~> 1.3 | Instrumentation |
+
+These are reckon_evoq's own floors (its `rebar.config`); with `~>` they float to
+the newest minor, so a fresh build today takes evoq 1.29 and reckon_gater 3.14.
 
 > **2.0.0 migration note:** reckon-evoq 2.0.0 consumes the renamed reckon-gater 2.0.0 API (`reckon_gater_api:*`, `reckon_gater_types.hrl`). Apps that go through `reckon_evoq_adapter` via `evoq_dispatcher` upgrade as a drop-in. Apps that reached directly into `esdb_gater_api` must do their own migration per reckon-gater 2.0.0's release notes.
 

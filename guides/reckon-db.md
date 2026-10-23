@@ -32,10 +32,10 @@ stream_id: "order-018f6a7b8c9d4e5f60718293a4b5c6d9"
 
 ### Events
 
-Events are wrapped in the `reckon_event` record (defined in reckon_gater):
+Events are wrapped in the `#event{}` record (defined in reckon_gater):
 
 ```erlang
-#reckon_event{
+#event{
     event_id,       %% UUID
     event_type,     %% Binary, e.g. <<"order_placed_v1">>
     stream_id,      %% Binary, e.g. <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>
@@ -64,91 +64,104 @@ For aggregates with long event histories, snapshots cache the aggregate state at
 
 ### Embedded Mode (Single Node)
 
+A store is named in the `reckon_db` application environment and starts with the
+application. In `config/sys.config`:
+
 ```erlang
-%% In your supervisor
-#{id => my_store,
-  start => {reckon_db_sup, start_store, [#{
-      name => my_store,
-      data_dir => "/var/lib/my_app/events"
-  }]},
-  type => supervisor}
+[
+ {reckon_db, [
+     {stores, [
+         {my_store, [{data_dir, "data/my_store"}, {mode, single}]}
+     ]}
+ ]}
+].
 ```
+
+`application:ensure_all_started(reckon_db)` (or listing `reckon_db` in your
+application's `applications`) then starts `my_store`. A store can also be
+started at runtime with `reckon_db_sup:start_store/1`, which takes a store name
+already in that configuration or a `#store_config{}` record
+(`reckon_db/include/reckon_db.hrl`), not a map.
 
 ### Clustered Mode
 
-```erlang
-#{id => my_store,
-  start => {reckon_db_sup, start_store, [#{
-      name => my_store,
-      data_dir => "/var/lib/my_app/events",
-      cluster => #{
-          nodes => ['node1@host1', 'node2@host2', 'node3@host3']
-      }
-  }]},
-  type => supervisor}
-```
+A clustered store uses `{mode, cluster}` and needs a cluster secret, set as
+`{reckon_db, [{cluster_secret, <<"...">>}]}` or the `RECKON_DB_CLUSTER_SECRET`
+environment variable. Without one, discovery stays off and the store logs why.
+The full set of cluster keys is in reckon-db's
+[Configuration](https://github.com/reckon-db-org/reckon-db#configuration)
+section.
 
 ## Core Operations
+
+Every call below takes the store name first. A stream id is `<prefix>-<32 hex>`
+([Stream Ids](https://hexdocs.pm/reckon_gater/stream_ids.html)).
 
 ### Append Events
 
 ```erlang
+OrderId = <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>,
 Events = [
     #{event_type => <<"order_placed_v1">>,
-      data => #{order_id => <<"ord-1">>, total => 4999},
-      metadata => #{correlation_id => <<"req-abc">>}}
+      data => #{total => 4999},
+      metadata => #{correlation_id => <<"req-abc">>},
+      tags => [<<"customer:42">>]}
 ],
-{ok, Written} = reckon_db:append(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, Events).
+{ok, 0} = reckon_db_streams:append(my_store, OrderId, -1, Events).
 ```
+
+The third argument is the version you expect the stream to be at: `-1` says
+the stream must not exist yet, and the call returns the stream's new version.
 
 ### Read Events
 
 ```erlang
-%% Read all events from a stream
-{ok, Events} = reckon_db:read_stream(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>).
+%% Up to 100 events, forward from version 0
+{ok, Read} = reckon_db_streams:read(my_store, OrderId, 0, 100, forward).
 
-%% Read from a specific version
-{ok, Events} = reckon_db:read_stream(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, #{from => 5}).
+%% The stream's current version
+0 = reckon_db_streams:get_version(my_store, OrderId).
 ```
+
+Each event comes back as an `#event{}` record (`reckon_gater_types.hrl`), with
+the `data`, `metadata` and `tags` you appended.
 
 ### Subscribe
 
 ```erlang
-%% Catch-up subscription (starts from beginning)
-{ok, SubId} = reckon_db:subscribe(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, self(), #{
-    from => 0
-}).
+{ok, _Key} = reckon_db_subscriptions:subscribe(
+    my_store, stream, OrderId, <<"order_watcher">>, #{subscriber => self()}).
 
-%% Live subscription (only new events)
-{ok, SubId} = reckon_db:subscribe(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, self(), #{
-    from => latest
-}).
-
-%% Receive events
+%% Every event appended to the stream from now on arrives as
 receive
-    {reckon_event, SubId, Event} -> handle(Event)
+    {events, [Event | _]} -> handle(Event)
 end.
 ```
+
+Without the `subscriber` option the subscription is recorded but nothing is
+sent to your process. The other subscription types are `event_type`,
+`event_pattern` and `event_payload`; see reckon-db's API reference.
 
 ### Snapshots
 
 ```erlang
-%% Save snapshot
-ok = reckon_db:save_snapshot(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>, #{
-    version => 100,
-    state => AggregateState
-}).
+%% Save the aggregate's state as of version 0
+ok = reckon_db_snapshots:save(my_store, OrderId, 0, #{total => 4999}).
 
-%% Load latest snapshot
-{ok, Snapshot} = reckon_db:load_snapshot(my_store, <<"order-018f6a7b8c9d4e5f60718293a4b5c6d9">>).
+%% Load the latest snapshot
+{ok, Snapshot} = reckon_db_snapshots:load(my_store, OrderId).
 ```
 
 ### Cross-Stream Queries
 
 ```erlang
-%% Query events by tag
-{ok, Events} = reckon_db:query_by_tag(my_store, <<"realm:io.macula">>).
+%% Every event carrying the tag, across all streams
+{ok, Tagged} = reckon_db_streams:read_by_tags(my_store, [<<"customer:42">>], any, 100).
 ```
+
+Without a declared tag index this scans the whole store and logs a hint saying
+so; declare the index in the store's configuration to make it proportional to
+the matches.
 
 ## Architecture
 

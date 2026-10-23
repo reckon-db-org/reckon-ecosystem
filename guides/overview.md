@@ -69,10 +69,6 @@ Your Application
 
 ## Where Reckon is Used
 
-### Hecate
-
-[Hecate](https://github.com/hecate-social/hecate-ecosystem) is an AI-powered developer studio that uses Reckon for all its domain services. The daemon runs 19+ evoq-powered applications — each with its own embedded reckon_db instance, managing ventures, divisions, designs, plans, and more through event sourcing.
-
 ### Macula
 
 [Macula](https://github.com/macula-io/macula-ecosystem) is a distributed application platform. Reckon provides the persistence layer for applications that run on Macula's HTTP/3 mesh network.

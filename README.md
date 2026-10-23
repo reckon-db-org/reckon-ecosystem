@@ -102,9 +102,9 @@ A BEAM-native, distributed event store built on [Khepri](https://github.com/rabb
 The shared type definitions and store interface that the BEAM packages depend on. Provides the API contract between framework and storage.
 
 **Core capabilities:**
-- **Event Records** — Canonical `#reckon_event{}` record used everywhere
-- **Snapshot Records** — `#reckon_snapshot{}` for aggregate state caching
-- **Subscription Records** — `#reckon_subscription{}` for event delivery
+- **Event Records** — Canonical `#event{}` record used everywhere
+- **Snapshot Records** — `#snapshot{}` for aggregate state caching
+- **Subscription Records** — `#subscription{}` for event delivery
 - **DCB/CCC types** — `tag_filter` context queries and payload-condition declarations
 - **Store Interface** — Behaviour defining the event store API
 - **Load Balancing** — Request routing and UCAN security
@@ -308,7 +308,6 @@ Built on Ra (RabbitMQ's queue-replication library) and Khepri (RabbitMQ's next-g
 
 ## Who Uses Reckon?
 
-- [**Hecate**](https://github.com/hecate-social/hecate-ecosystem) — AI-powered developer studio for Macula mesh applications
 - [**Macula**](https://github.com/macula-io/macula-ecosystem) — Distributed application platform with HTTP/3 mesh networking
 
 ---
@@ -316,7 +315,6 @@ Built on Ra (RabbitMQ's queue-replication library) and Khepri (RabbitMQ's next-g
 ## Community
 
 - **GitHub**: [reckon-db-org](https://github.com/reckon-db-org) (canonical)
-- **GitHub mirror**: [reckon-db-org](https://github.com/reckon-db-org) (read-only)
 - **Hex.pm**: [reckon_db](https://hex.pm/packages/reckon_db) | [evoq](https://hex.pm/packages/evoq) | [reckon_gater](https://hex.pm/packages/reckon_gater) | [reckon_evoq](https://hex.pm/packages/reckon_evoq)
 
 ## License
