@@ -32,31 +32,33 @@ The critical insight: **reckon_evoq depends on evoq + reckon_gater, NOT on recko
 
 ```
 1. Application code dispatches a command
-   └── reckon_evoq:dispatch(Store, StreamId, Aggregate, Cmd)
+   └── evoq_router:dispatch(evoq_command:new(Type, Aggregate, AggregateId, Payload))
 
-2. reckon_evoq loads current aggregate state
-   └── Reads events from reckon_db via reckon_gater API
+2. evoq loads current aggregate state (first use only)
+   └── Aggregate:init(AggregateId), then the stream's events, read
+       through reckon_evoq_adapter and reckon_gater
    └── Replays events through Aggregate:apply/2
 
 3. evoq executes the command
-   └── Aggregate:execute(CurrentState, Command)
+   └── Aggregate:execute(CurrentState, Payload)
    └── Returns {ok, [Events]} or {error, Reason}
 
-4. reckon_evoq persists new events
-   └── Appends to stream in reckon_db
-   └── Events wrapped in evoq_event envelope
+4. evoq persists new events through reckon_evoq_adapter
+   └── Appends to the stream named by AggregateId in reckon_db
+   └── Everything but event_type is stored as the event's data
+   └── dispatch returns {ok, Version, Events}
 
 5. Subscriptions are notified
    └── reckon_db delivers events to subscribers
    └── Catch-up + live delivery
 ```
 
-### The reckon_event Envelope
+### The event Envelope
 
-Every domain event is wrapped in the canonical `#reckon_event{}` record (defined in `reckon-gater`, header `reckon_gater/include/reckon_gater_types.hrl`). The envelope adds operational metadata:
+Every domain event is wrapped in the canonical `#event{}` record (defined in `reckon-gater`, header `reckon_gater/include/reckon_gater_types.hrl`). The envelope adds operational metadata:
 
 ```erlang
-#reckon_event{
+#event{
     event_id              :: binary(),           %% UUIDv7
     event_type            :: binary(),           %% e.g., <<"user_registered_v1">>
     stream_id             :: binary(),           %% e.g., <<"user-018f6a7b8c9d4e5f60718293a4b5c6d7">>
@@ -258,7 +260,7 @@ The key is 32 random bytes (HMAC-SHA256). Loaded into `persistent_term` at store
 
 ### What gets stored
 
-The `#reckon_event{}` record (in `reckon-gater`) carries three integrity fields:
+The `#event{}` record (in `reckon-gater`) carries three integrity fields:
 
 | Field | Purpose | When populated |
 |-------|---------|----------------|
@@ -266,7 +268,7 @@ The `#reckon_event{}` record (in `reckon-gater`) carries three integrity fields:
 | `mac :: {KeyId, MacBytes} \| undefined` | HMAC-SHA256 over canonical bytes of the event, domain-tagged `evt\|`. Symmetric secret bound to the per-store key. Verified at the storage boundary only; **never** propagated to external consumers. | Events written on integrity-enabled stores |
 | `signature :: binary() \| undefined` | Reserved for Ed25519 cross-trust-domain authenticity in a future release. Not populated in 2.1.x. | Not populated in 2.1.x |
 
-The `#reckon_snapshot{}` record carries two analogous fields:
+The `#snapshot{}` record carries two analogous fields:
 
 | Field | Purpose |
 |-------|---------|
@@ -337,8 +339,8 @@ Event = #{
     ...
 }
 
-%% Query by tag
-{ok, Events} = reckon_db:query_by_tag(Store, <<"realm:io.macula">>).
+%% Query by tag, across all streams
+{ok, Events} = reckon_db_streams:read_by_tags(Store, [<<"realm:io.macula">>], any, 100).
 ```
 
 ## Next Steps

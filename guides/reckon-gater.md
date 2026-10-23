@@ -25,9 +25,9 @@ Note: You typically don't add reckon_gater directly — it comes as a transitive
 The canonical event record used across the ecosystem:
 
 ```erlang
--include_lib("reckon_gater/include/reckon_types.hrl").
+-include_lib("reckon_gater/include/reckon_gater_types.hrl").
 
-#reckon_event{
+#event{
     event_id        :: binary(),
     event_type      :: binary(),
     stream_id       :: binary(),
@@ -45,23 +45,29 @@ The canonical event record used across the ecosystem:
 ### Snapshot Record
 
 ```erlang
-#reckon_snapshot{
+#snapshot{
     stream_id  :: binary(),
     version    :: non_neg_integer(),
-    state      :: term(),
+    data       :: map() | binary(),   %% the aggregate state
+    metadata   :: map(),
     timestamp  :: integer()
+    %% plus integrity fields (reckon-gater 2.1+), undefined on legacy snapshots
 }
 ```
 
 ### Subscription Record
 
 ```erlang
-#reckon_subscription{
-    subscription_id :: binary(),
-    stream_id       :: binary(),
-    subscriber      :: pid(),
-    from            :: non_neg_integer() | latest,
-    status          :: active | paused | cancelled
+#subscription{
+    id                :: binary(),
+    type              :: stream | event_type | event_pattern | event_payload,
+    selector          :: binary() | map(),
+    subscription_name :: binary(),
+    subscriber_pid    :: pid() | undefined,
+    created_at        :: integer(),
+    pool_size         :: pos_integer(),
+    checkpoint        :: non_neg_integer() | undefined,
+    options           :: map()
 }
 ```
 

@@ -102,9 +102,9 @@ A BEAM-native, distributed event store built on [Khepri](https://github.com/rabb
 The shared type definitions and store interface that the BEAM packages depend on. Provides the API contract between framework and storage.
 
 **Core capabilities:**
-- **Event Records** — Canonical `#reckon_event{}` record used everywhere
-- **Snapshot Records** — `#reckon_snapshot{}` for aggregate state caching
-- **Subscription Records** — `#reckon_subscription{}` for event delivery
+- **Event Records** — Canonical `#event{}` record used everywhere
+- **Snapshot Records** — `#snapshot{}` for aggregate state caching
+- **Subscription Records** — `#subscription{}` for event delivery
 - **DCB/CCC types** — `tag_filter` context queries and payload-condition declarations
 - **Store Interface** — Behaviour defining the event store API
 - **Load Balancing** — Request routing and UCAN security
